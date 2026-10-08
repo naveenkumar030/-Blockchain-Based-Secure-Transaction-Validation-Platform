@@ -543,6 +543,10 @@ def get_js():
 def get_css():
     return FileResponse(os.path.join(STATIC_DIR, "style.css"))
 
+@app.get("/logo.png", tags=["frontend"])
+def get_logo():
+    return FileResponse(os.path.join(STATIC_DIR, "logo.png"))
+
 
 
 @app.get("/health", tags=["health"])

@@ -220,7 +220,7 @@ export default function Register() {
 
         {/* Logo */}
         <div className="flex items-center gap-3 relative z-10">
-          <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl shadow-lg object-cover" />
+          <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl shadow-lg object-contain bg-white/5 p-0.5" />
           <div>
             <h1 className="text-[17px] font-bold text-white leading-tight">GST Reconciliation</h1>
             <p className="text-[11px] text-slate-400 font-medium">Reconciliation Intelligence</p>
@@ -265,7 +265,7 @@ export default function Register() {
         >
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden">
-            <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg shadow-sm object-cover" />
+            <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg shadow-sm object-contain" />
             <span className="text-[15px] font-bold text-gray-900">GST Reconciliation</span>
           </div>
 

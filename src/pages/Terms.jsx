@@ -222,7 +222,7 @@ export default function Terms() {
             </button>
             <div className="h-5 w-px bg-gray-200" />
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Logo" className="w-6 h-6 rounded-md shadow-sm object-cover" />
+              <img src="/logo.png" alt="Logo" className="w-6 h-6 rounded-md shadow-sm object-contain" />
               <span className="text-[13px] font-bold text-gray-900">GST ReconGraph</span>
             </div>
           </div>

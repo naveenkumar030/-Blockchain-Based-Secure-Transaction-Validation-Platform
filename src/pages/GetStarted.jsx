@@ -21,10 +21,8 @@ export default function GetStarted() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="z-10 flex flex-col items-center mt-16"
       >
-        <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center shadow-2xl mb-6">
-          <span className="material-symbols-outlined text-[64px] text-[#398b67]">
-            monitoring
-          </span>
+        <div className="w-24 h-24 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-2xl mb-6 p-3">
+          <img src="/logo.png" alt="Logo" className="w-full h-full object-contain drop-shadow" />
         </div>
         <h1 className="text-white text-[42px] font-bold leading-tight text-center font-display-lg">
           GST<br/>Reconciliation

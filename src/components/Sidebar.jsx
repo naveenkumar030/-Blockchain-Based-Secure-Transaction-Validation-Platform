@@ -74,7 +74,7 @@ export default function Sidebar({ collapsed, setCollapsed, setMobileOpen, onNewA
       <div className={`h-16 flex items-center border-b border-[#1E2A3B] shrink-0 ${
         collapsed ? 'justify-center px-4' : 'px-4 gap-3'
       }`}>
-        <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg shadow-lg object-cover" />
+        <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg shadow-lg object-contain" />
         {!collapsed && (
           <div className="flex-1 min-w-0 overflow-hidden">
             <h1 className="text-[14px] font-bold text-white truncate leading-tight tracking-tight">

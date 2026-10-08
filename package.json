@@ -1,0 +1,46 @@
+{
+  "name": "gstapp1",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:lambdatest": "node run-lambdatest.js",
+    "test:lambdatest:ec2": "cross-env BASE_URL=http://100.55.59.23 node run-lambdatest.js",
+    "start": "python start.py"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.2",
+    "autoprefixer": "^10.5.2",
+    "d3-force": "^3.0.0",
+    "framer-motion": "^12.42.2",
+    "lucide-react": "^1.23.0",
+    "postcss": "^8.5.16",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-force-graph-2d": "^1.29.1",
+    "react-router-dom": "^7.18.1",
+    "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "@lambdatest/node-tunnel": "^4.0.0",
+    "@playwright/test": "^1.42.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5",
+    "jsdom": "^26.1.0",
+    "oxlint": "^1.71.0",
+    "vite": "^8.1.3",
+    "vitest": "^3.2.7"
+  }
+}

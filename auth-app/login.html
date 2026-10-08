@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <canvas id="fieldCanvas"></canvas>
+
+  <div class="blob-wrap">
+    <div class="blob-layer" id="blobLayer">
+      <div class="blob-echo"></div>
+      <div class="blob" id="blob"></div>
+    </div>
+  </div>
+
+  <div class="card-wrap">
+    <div class="glass-card">
+
+      <div class="mark stagger" style="animation-delay:.05s">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7l-9-5z" fill="#CFFFE2"/>
+        </svg>
+      </div>
+
+      <h1 class="title stagger" style="animation-delay:.1s">Welcome back</h1>
+      <p class="subtitle stagger" style="animation-delay:.15s">Sign in to keep things moving</p>
+
+      <form id="loginForm" novalidate>
+
+        <div class="field stagger" id="userField" style="animation-delay:.2s">
+          <input type="text" id="username" autocomplete="username" required>
+          <label for="username">Username or email</label>
+          <span class="underline"></span>
+        </div>
+
+        <div class="field stagger" id="passField" style="animation-delay:.25s">
+          <input type="password" id="password" autocomplete="current-password" required>
+          <label for="password">Password</label>
+          <button type="button" class="icon-btn" id="togglePass" aria-label="Show password">
+            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+          <span class="underline"></span>
+        </div>
+        <div class="caps-hint" id="capsHint" style="margin-top:-1.2rem; margin-bottom:1.3rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L4 12 H9 V22 H15 V12 H20 Z"/></svg>
+          Caps Lock is on
+        </div>
+
+        <div class="row-options stagger" style="animation-delay:.3s">
+          <label class="remember-wrap">
+            <input type="checkbox" id="remember">
+            <span class="toggle"></span>
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-login stagger" id="loginBtn" style="animation-delay:.35s">
+          <span class="btn-label" id="btnLabelText">Sign in</span>
+          <svg class="btn-check" id="btnCheck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </button>
+      </form>
+
+      <p class="signup-line stagger" style="animation-delay:.4s">New here? <a href="register.html" data-nav="register.html">Create an account</a></p>
+
+      <div id="dashboard" style="display: none; text-align: center;">
+        <h1 class="title" style="margin-bottom: 0.5rem;">User Dashboard</h1>
+        <p class="subtitle" id="welcomeMsg" style="margin-bottom: 1.5rem;">Welcome back!</p>
+        
+        <div style="margin-bottom: 2rem; text-align: left; background: rgba(255,255,255,0.4); padding: 1.2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.5);">
+          <div style="font-size: 0.78rem; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem;">Full Name</div>
+          <div id="dbFullname" style="font-weight: 600; font-size: 1.05rem; margin-bottom: 1rem; color: var(--ink);">-</div>
+          
+          <div style="font-size: 0.78rem; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem;">Email Address</div>
+          <div id="dbEmail" style="font-weight: 600; font-size: 1.05rem; margin-bottom: 1rem; color: var(--ink);">-</div>
+          
+          <div style="font-size: 0.78rem; color: #6b6b6b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem;">Registered Users</div>
+          <div id="dbUsersCount" style="font-weight: 600; font-size: 1.05rem; color: var(--ink);">-</div>
+        </div>
+        
+        <button id="logoutBtn" class="btn-login" style="background: #e85a5a; color: white;">
+          Sign out
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  const userInput = document.getElementById('username');
+  const passInput = document.getElementById('password');
+  const userField = document.getElementById('userField');
+  const passField = document.getElementById('passField');
+
+  wireFloatingField(userInput, 'focus-a');
+  wireFloatingField(passInput, 'focus-b');
+  wireCapsHint(passInput, document.getElementById('capsHint'));
+  wirePasswordToggle(document.getElementById('togglePass'), passInput, document.getElementById('eyeIcon'));
+  wireRipple(document.getElementById('loginBtn'));
+
+  async function checkAuth() {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      showLoginForm();
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/me', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!response.ok) {
+        throw new Error('Unauthorized');
+      }
+      const data = await response.json();
+      showDashboard(data, token);
+    } catch (e) {
+      localStorage.removeItem('access_token');
+      showLoginForm();
+    }
+  }
+
+  function showLoginForm() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.querySelector('.mark').style.display = 'flex';
+    document.querySelector('h1.title').style.display = 'block';
+    document.querySelector('p.subtitle').style.display = 'block';
+    document.querySelector('.signup-line').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+
+  async function showDashboard(user, token) {
+    document.getElementById('loginForm').style.display = 'none';
+    document.querySelector('.mark').style.display = 'none';
+    document.querySelector('h1.title').style.display = 'none';
+    document.querySelector('p.subtitle').style.display = 'none';
+    document.querySelector('.signup-line').style.display = 'none';
+    
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('dbFullname').textContent = user.fullname;
+    document.getElementById('dbEmail').textContent = user.email;
+    document.getElementById('welcomeMsg').textContent = 'Signed in as ' + user.email;
+
+    try {
+      const usersResponse = await fetch('/api/admin/users', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (usersResponse.ok) {
+        const usersData = await usersResponse.json();
+        document.getElementById('dbUsersCount').textContent = `${usersData.total} user(s) total`;
+      }
+    } catch (e) {
+      document.getElementById('dbUsersCount').textContent = 'Error loading users list';
+    }
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('access_token');
+    showLoginForm();
+  });
+
+  // Call on load
+  checkAuth();
+
+  wireSubmit({
+    formEl: document.getElementById('loginForm'),
+    btn: document.getElementById('loginBtn'),
+    btnLabel: document.getElementById('btnLabelText'),
+    requiredFields: [
+      { input: userInput, field: userField },
+      { input: passInput, field: passField }
+    ],
+    onSuccess: async function(){
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            identifier: userInput.value,
+            password: passInput.value
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem('access_token', data.access_token);
+          checkAuth();
+          return true;
+        } else {
+          const errorData = await response.json();
+          let msg = errorData.detail;
+          if (Array.isArray(msg)) {
+            msg = msg.map(e => e.msg).join(", ");
+          }
+          if (response.status === 403 && /verify/i.test(msg || "")) {
+            if (confirm((msg || "Please verify your email first.") + "\n\nSend a new verification code now?")) {
+              window.navigateTo('register.html?verify=' + encodeURIComponent(userInput.value.trim()));
+            }
+          } else {
+            alert("Error: " + (msg || "Login failed"));
+          }
+          return false;
+        }
+      } catch (err) {
+        alert("Failed to connect to server.");
+        return false;
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

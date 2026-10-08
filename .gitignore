@@ -1,0 +1,56 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist/
+dist-ssr
+*.local
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+venv/
+.venv/
+env/
+**/venv/
+**/env/
+
+# GST dataset caches / temporary files
+**/core_dataset_cache.csv
+**/core_dataset_metadata.json
+temp_core_dataset.csv*
+*.CF348bbC
+
+# Playwright & test output
+playwright-report/
+test-results/
+.lambdatest/
+ltcupdate
+bandit_report.json
+backend/data/

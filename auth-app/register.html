@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <canvas id="fieldCanvas"></canvas>
+
+  <div class="blob-wrap">
+    <div class="blob-layer" id="blobLayer">
+      <div class="blob-echo"></div>
+      <div class="blob" id="blob"></div>
+    </div>
+  </div>
+
+  <div class="card-wrap">
+    <div class="glass-card">
+
+      <div class="mark stagger" style="animation-delay:.05s">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7l-9-5z" fill="#CFFFE2"/>
+        </svg>
+      </div>
+
+      <h1 class="title stagger" style="animation-delay:.1s">Create account</h1>
+      <p class="subtitle stagger" style="animation-delay:.15s">Takes less than a minute</p>
+
+      <form id="registerForm" novalidate>
+
+        <div class="field-row stagger" style="animation-delay:.2s">
+          <div class="field" id="nameField">
+            <input type="text" id="fullname" autocomplete="name" required>
+            <label for="fullname">Full name</label>
+            <span class="underline"></span>
+          </div>
+        </div>
+
+        <div class="field stagger" id="emailField" style="animation-delay:.25s">
+          <input type="email" id="email" autocomplete="email" required>
+          <label for="email">Email address</label>
+          <span class="check-pop">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="underline"></span>
+        </div>
+
+        <div class="field stagger" id="passField" style="animation-delay:.3s">
+          <input type="password" id="password" autocomplete="new-password" required>
+          <label for="password">Password</label>
+          <button type="button" class="icon-btn" id="togglePass" aria-label="Show password">
+            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+          <span class="underline"></span>
+        </div>
+        <div class="caps-hint" id="capsHint">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L4 12 H9 V22 H15 V12 H20 Z"/></svg>
+          Caps Lock is on
+        </div>
+
+        <div class="strength stagger" style="animation-delay:.32s">
+          <div class="strength-track">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+          <span class="strength-label" id="strengthLabel">Use 8+ characters with a mix of letters &amp; numbers</span>
+        </div>
+
+        <div class="field stagger" id="confirmField" style="animation-delay:.35s">
+          <input type="password" id="confirm" autocomplete="new-password" required>
+          <label for="confirm">Confirm password</label>
+          <span class="check-pop">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="underline"></span>
+        </div>
+
+        <button type="submit" class="btn-login stagger" id="registerBtn" style="animation-delay:.4s">
+          <span class="btn-label" id="btnLabelText">Create account</span>
+          <svg class="btn-check" id="btnCheck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </button>
+      </form>
+
+      <p class="signup-line stagger" style="animation-delay:.45s">Already have an account? <a href="login.html" data-nav="login.html">Sign in</a></p>
+
+      <!-- ---------- OTP verification step (shown after successful registration) ---------- -->
+      <div id="otpStep" style="display:none; text-align:center;">
+        <h1 class="title" style="margin-bottom:.25rem;">Check your email</h1>
+        <p class="subtitle" id="otpSubtitle" style="margin-bottom:1.8rem;">We sent a 6-digit code to your email</p>
+
+        <form id="otpForm" novalidate>
+          <div class="field field-centered" id="otpField" style="margin-bottom:.6rem;">
+            <input type="text" id="otpInput" inputmode="numeric" pattern="\d*" maxlength="6"
+                   autocomplete="one-time-code" required
+                   style="font-size:1.4rem; letter-spacing:.5rem; font-weight:600;">
+            <label for="otpInput">Verification code</label>
+            <span class="underline"></span>
+          </div>
+
+          <p id="otpError" style="color:#c0392b; font-size:.82rem; min-height:1.1rem; margin:.4rem 0 1rem;"></p>
+
+          <button type="submit" class="btn-login" id="otpBtn">
+            <span class="btn-label" id="otpBtnLabel">Verify email</span>
+            <svg class="btn-check" id="otpBtnCheck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </button>
+        </form>
+
+        <p class="signup-line" style="margin-top:1.4rem;">
+          Didn't get it?
+          <a href="#" id="resendOtpLink">Resend code</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  const nameInput = document.getElementById('fullname');
+  const emailInput = document.getElementById('email');
+  const passInput = document.getElementById('password');
+  const confirmInput = document.getElementById('confirm');
+
+  const nameField = document.getElementById('nameField');
+  const emailField = document.getElementById('emailField');
+  const passField = document.getElementById('passField');
+  const confirmField = document.getElementById('confirmField');
+
+  const blob = document.getElementById('blob');
+  const strengthFill = document.getElementById('strengthFill');
+  const strengthLabel = document.getElementById('strengthLabel');
+
+  wireFloatingField(nameInput, 'focus-a');
+  wireFloatingField(emailInput, 'focus-b');
+  wireFloatingField(passInput, 'focus-c');
+  wireFloatingField(confirmInput, 'focus-btn');
+
+  wireCapsHint(passInput, document.getElementById('capsHint'));
+  wirePasswordToggle(document.getElementById('togglePass'), passInput, document.getElementById('eyeIcon'));
+  wireRipple(document.getElementById('registerBtn'));
+
+  // live email validity check -> check-pop icon
+  emailInput.addEventListener('input', () => {
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
+    emailField.classList.toggle('is-valid', ok);
+  });
+
+  // live confirm-match check -> check-pop icon
+  function syncConfirmMatch(){
+    const ok = confirmInput.value.length > 0 && confirmInput.value === passInput.value;
+    confirmField.classList.toggle('is-valid', ok);
+  }
+  confirmInput.addEventListener('input', syncConfirmMatch);
+  passInput.addEventListener('input', syncConfirmMatch);
+
+  // password strength -> fills bar AND recolors the living blob
+  passInput.addEventListener('input', () => {
+    const val = passInput.value;
+    let score = 0;
+    if(val.length >= 6) score++;
+    if(val.length >= 10) score++;
+    if(/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+    if(/\d/.test(val)) score++;
+    if(/[^A-Za-z0-9]/.test(val)) score++;
+
+    const pct = val.length === 0 ? 0 : Math.min(100, (score / 5) * 100);
+    strengthFill.style.width = pct + '%';
+
+    blob.classList.remove('strength-weak','strength-fair','strength-strong');
+
+    if(val.length === 0){
+      strengthLabel.textContent = 'Use 8+ characters with a mix of letters & numbers';
+    } else if(score <= 1){
+      strengthLabel.textContent = 'Weak — try adding numbers or symbols';
+      blob.classList.add('strength-weak');
+    } else if(score <= 3){
+      strengthLabel.textContent = 'Fair — almost a strong password';
+      blob.classList.add('strength-fair');
+    } else {
+      strengthLabel.textContent = 'Strong password';
+      blob.classList.add('strength-strong');
+    }
+  });
+
+  let pendingEmail = '';
+
+  function showOtpStep(email){
+    pendingEmail = email;
+    document.getElementById('registerForm').style.display = 'none';
+    document.querySelector('h1.title').style.display = 'none';
+    document.querySelector('p.subtitle').style.display = 'none';
+    document.querySelectorAll('.signup-line')[0].style.display = 'none';
+    document.querySelector('.mark').style.display = 'none';
+
+    document.getElementById('otpStep').style.display = 'block';
+    document.getElementById('otpSubtitle').textContent = `We sent a 6-digit code to ${email}`;
+    document.getElementById('otpInput').focus();
+  }
+
+  const otpInput = document.getElementById('otpInput');
+  const otpField = document.getElementById('otpField');
+  const otpError = document.getElementById('otpError');
+  const otpBtn = document.getElementById('otpBtn');
+  const otpBtnLabel = document.getElementById('otpBtnLabel');
+  const resendLink = document.getElementById('resendOtpLink');
+
+  wireFloatingField(otpInput, 'focus-a');
+  wireRipple(otpBtn);
+
+  otpInput.addEventListener('input', () => {
+    otpInput.value = otpInput.value.replace(/\D/g, '').slice(0, 6);
+  });
+
+  document.getElementById('otpForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    otpError.textContent = '';
+
+    if(otpInput.value.length !== 6){
+      window.shakeField(otpField);
+      otpError.textContent = 'Enter the 6-digit code.';
+      return;
+    }
+
+    otpBtn.disabled = true;
+    otpBtnLabel.innerHTML = '<span class="dots"><span></span><span></span><span></span></span>';
+
+    try {
+      const response = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: pendingEmail, otp: otpInput.value })
+      });
+
+      if (response.ok) {
+        otpBtn.classList.add('is-success');
+        window.fireParticleBurst();
+        setTimeout(() => navigateTo('login.html'), 800);
+      } else {
+        const errorData = await response.json();
+        let msg = errorData.detail;
+        if (Array.isArray(msg)) msg = msg.map(e => e.msg).join(', ');
+        otpError.textContent = msg || 'Verification failed.';
+        window.shakeField(otpField);
+        otpBtn.disabled = false;
+        otpBtnLabel.textContent = 'Verify email';
+      }
+    } catch (err) {
+      otpError.textContent = 'Failed to connect to server.';
+      otpBtn.disabled = false;
+      otpBtnLabel.textContent = 'Verify email';
+    }
+  });
+
+  let resendCooldown = 0;
+  function tickResend(){
+    if(resendCooldown <= 0){
+      resendLink.textContent = 'Resend code';
+      return;
+    }
+    resendLink.textContent = `Resend code (${resendCooldown}s)`;
+    resendCooldown--;
+    setTimeout(tickResend, 1000);
+  }
+
+  resendLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+    if(resendCooldown > 0) return;
+    otpError.textContent = '';
+
+    try {
+      const response = await fetch('/api/resend-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: pendingEmail })
+      });
+      if (response.ok) {
+        resendCooldown = 45;
+        tickResend();
+      } else {
+        const errorData = await response.json();
+        otpError.textContent = errorData.detail || 'Could not resend code.';
+      }
+    } catch (err) {
+      otpError.textContent = 'Failed to connect to server.';
+    }
+  });
+
+  wireSubmit({
+    formEl: document.getElementById('registerForm'),
+    btn: document.getElementById('registerBtn'),
+    btnLabel: document.getElementById('btnLabelText'),
+    requiredFields: [
+      { input: nameInput, field: nameField },
+      { input: emailInput, field: emailField },
+      { input: passInput, field: passField },
+      { input: confirmInput, field: confirmField }
+    ],
+    onSuccess: async function(){
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullname: nameInput.value,
+            email: emailInput.value,
+            password: passInput.value
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setTimeout(() => showOtpStep(data.email), 800);
+          return true;
+        } else {
+          const errorData = await response.json();
+          let msg = errorData.detail;
+          if (Array.isArray(msg)) {
+            msg = msg.map(e => e.msg).join(", ");
+          }
+          alert("Error: " + (msg || "Registration failed"));
+          return false;
+        }
+      } catch (err) {
+        alert("Failed to connect to server.");
+        return false;
+      }
+    }
+  });
+
+  // If we arrived here from a "please verify" redirect off the login page,
+  // skip straight to the OTP step and send a fresh code.
+  const urlParams = new URLSearchParams(window.location.search);
+  const verifyParam = urlParams.get('verify');
+  if (verifyParam) {
+    showOtpStep(verifyParam);
+    resendLink.click();
+  }
+</script>
+
+</body>
+</html>

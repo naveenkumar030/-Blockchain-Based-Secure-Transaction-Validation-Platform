@@ -3,10 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Mail, Lock, Eye, EyeOff, RotateCcw, ArrowRight,
-  Network, CheckCircle2, Building2, Briefcase, ChevronDown,
+  Network, CheckCircle2,
   ShieldCheck, BarChart3, Users, Link2,
 } from 'lucide-react';
 import AuthBackground from '../components/AuthBackground';
+import { authApi } from '../services/api';
 
 /* ── Password Strength ─────────────────────────────────── */
 function getPasswordStrength(p) {
@@ -24,7 +25,7 @@ function getPasswordStrength(p) {
 }
 
 /* ── Step Progress ─────────────────────────────────────── */
-const STEPS = ['Account Info', 'Verification', 'Organization'];
+const STEPS = ['Account Info', 'Verification'];
 
 const FEATURES = [
   { icon: ShieldCheck,  emoji: '🔐', label: 'Cryptographic Security',  desc: 'Protect transactions using SHA-256 hashing and digital signatures.' },
@@ -81,11 +82,10 @@ function Field({ label, id, focused, children }) {
 export default function Register() {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(0);   // 0 = account, 1 = otp, 2 = org
+  const [step, setStep] = useState(0);   // 0 = account, 1 = otp
 
   const [formData, setFormData] = useState({
     fullName: '', email: '', password: '', confirmPassword: '', terms: false,
-    orgName: '', role: '', gstin: '',
   });
   const [otp, setOtp]           = useState(['', '', '', '', '', '']);
   const [showPw, setShowPw]     = useState(false);
@@ -156,7 +156,7 @@ export default function Register() {
     handleSendOTP();
   };
 
-  /* ── Step 1 → Verify OTP ── */
+  /* ── Step 1 → Verify OTP & Launch ── */
   const handleVerifyOTP = async () => {
     const code = otp.join('');
     if (code.length < 6) { setError('Please enter the complete 6-digit code.'); return; }
@@ -170,18 +170,23 @@ export default function Register() {
       const ct = res.headers.get('content-type') || '';
       const data = ct.includes('application/json') ? await res.json() : { detail: await res.text() };
       if (!res.ok) throw new Error(data.detail || data.message || 'OTP Verification failed');
-      setStep(2);
+
+      setSuccessMsg('Email verified successfully! Launching your workspace...');
+      try {
+        const loginData = await authApi.login(formData.email, formData.password);
+        localStorage.setItem('token', loginData.token);
+        localStorage.setItem('userName', loginData.name || formData.fullName.trim());
+        localStorage.setItem('userEmail', loginData.email || formData.email);
+        localStorage.removeItem('gst_upload_activity');
+        setTimeout(() => navigate('/dashboard'), 800);
+      } catch {
+        setTimeout(() => navigate('/login'), 1200);
+      }
     } catch (err) {
       setError(err.message || 'An unexpected error occurred.');
     } finally {
       setLoading(false);
     }
-  };
-
-  /* ── Step 2 → Finish ── */
-  const handleFinish = (e) => {
-    e.preventDefault();
-    navigate('/login');
   };
 
   /* ── OTP helpers ── */
@@ -273,7 +278,7 @@ export default function Register() {
             {/* Accent line */}
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: '40%' }}
+              animate={{ width: step === 0 ? '50%' : '100%' }}
               transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
               className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-blue-600 to-violet-500"
             />
@@ -439,7 +444,7 @@ export default function Register() {
                     className="w-full flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-[14px] font-semibold rounded-xl shadow-[0_4px_14px_rgba(37,99,235,0.3)] transition-all"
                   >
                     {loading ? <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : (
-                      <>Verify Code <ArrowRight size={15} strokeWidth={2.5} /></>
+                      <>Verify & Launch Workspace <ArrowRight size={15} strokeWidth={2.5} /></>
                     )}
                   </motion.button>
 
@@ -451,67 +456,6 @@ export default function Register() {
                     </button>
                   </div>
                 </motion.div>
-              )}
-
-              {/* ═══ STEP 2: Organization Info ═══ */}
-              {step === 2 && (
-                <motion.form key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }} onSubmit={handleFinish} className="space-y-4">
-
-                  <div className="p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2.5 mb-4">
-                    <CheckCircle2 size={16} className="text-green-600 shrink-0" />
-                    <p className="text-[12px] font-semibold text-green-800">Email verified successfully!</p>
-                  </div>
-
-                  <Field label="Organization Name" id="reg-org" focused={focusedField === 'orgName'}>
-                    <Building2 size={15} className={`absolute left-3.5 ${focusedField === 'orgName' ? 'text-blue-500' : 'text-gray-400'}`} strokeWidth={1.8} />
-                    <input id="reg-org" type="text" placeholder="Acme Enterprises Pvt Ltd"
-                      value={formData.orgName} {...F('orgName')}
-                      onChange={(e) => setFormData({ ...formData, orgName: e.target.value })}
-                      className="w-full py-3 pl-10 pr-4 text-[14px] text-gray-900 bg-transparent outline-none rounded-lg placeholder:text-gray-400"
-                    />
-                  </Field>
-
-                  <div className="space-y-1.5">
-                    <label htmlFor="reg-role" className="block text-[13px] font-semibold text-gray-700">Your Role</label>
-                    <div className={`relative flex items-center rounded-lg border transition-all duration-200 bg-white ${focusedField === 'role' ? 'border-blue-500 ring-2 ring-blue-500/15' : 'border-gray-200 hover:border-gray-300'}`}>
-                      <Briefcase size={15} className={`absolute left-3.5 ${focusedField === 'role' ? 'text-blue-500' : 'text-gray-400'}`} strokeWidth={1.8} />
-                      <select id="reg-role" value={formData.role} {...F('role')}
-                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                        className="w-full py-3 pl-10 pr-8 text-[14px] text-gray-900 bg-transparent outline-none rounded-lg appearance-none"
-                      >
-                        <option value="">Select your role…</option>
-                        <option>CFO / Finance Head</option>
-                        <option>Chartered Accountant</option>
-                        <option>GST Consultant</option>
-                        <option>Internal Auditor</option>
-                        <option>Tax Manager</option>
-                        <option>Other</option>
-                      </select>
-                      <ChevronDown size={14} className="absolute right-3.5 text-gray-400 pointer-events-none" />
-                    </div>
-                  </div>
-
-                  <Field label="Primary GSTIN (optional)" id="reg-gstin" focused={focusedField === 'gstin'}>
-                    <span className="absolute left-3.5 text-[12px] font-bold text-gray-400">IN</span>
-                    <input id="reg-gstin" type="text" placeholder="27AAAAA0000A1Z5"
-                      value={formData.gstin} {...F('gstin')}
-                      onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
-                      maxLength={15}
-                      className="w-full py-3 pl-10 pr-4 text-[14px] font-mono text-gray-900 bg-transparent outline-none rounded-lg placeholder:text-gray-400 placeholder:font-sans tracking-wider"
-                    />
-                  </Field>
-
-                  <motion.button
-                    whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-                    type="submit"
-                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 text-white text-[14px] font-semibold rounded-xl shadow-[0_4px_14px_rgba(22,163,74,0.3)] transition-all mt-2"
-                  >
-                    <CheckCircle2 size={16} />
-                    Launch My Workspace
-                  </motion.button>
-
-                  <p className="text-center text-[11px] text-gray-400">You can update these details later in Settings.</p>
-                </motion.form>
               )}
             </AnimatePresence>
 

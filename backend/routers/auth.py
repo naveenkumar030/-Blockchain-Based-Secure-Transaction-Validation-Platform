@@ -1,14 +1,37 @@
 import os
 import json
+import logging
 import urllib.request
 import uuid
 from fastapi import APIRouter, HTTPException
 from database import users_collection, otps_collection
-from models import RegisterRequest, VerifyOTPRequest, LoginRequest, ResetPasswordRequest, ResetPasswordVerifyRequest, GoogleLoginRequest
-from utils import get_password_hash, verify_password, create_access_token, generate_otp, send_email_async, limiter, ACCESS_TOKEN_EXPIRE_MINUTES
+from models import (
+    RegisterRequest,
+    VerifyOTPRequest,
+    LoginRequest,
+    ResetPasswordRequest,
+    ResetPasswordVerifyRequest,
+    GoogleLoginRequest,
+    TransactionNotificationRequest,
+)
+from utils import (
+    get_password_hash,
+    verify_password,
+    create_access_token,
+    generate_otp,
+    send_email_async,
+    send_verification_otp_email_async,
+    send_password_reset_otp_email_async,
+    send_password_changed_email_async,
+    send_welcome_email_async,
+    send_transaction_validation_email_async,
+    limiter,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+)
 from fastapi import Request
 from datetime import datetime, timedelta, timezone
 
+logger = logging.getLogger("auth")
 router = APIRouter()
 
 def utcnow():
@@ -52,13 +75,12 @@ async def register(request: Request, req: RegisterRequest):
             upsert=True
         )
 
-        # Send email — awaited directly so any failure returns a 500 with a clear message
+        # Send OTP email
         try:
-            await send_email_async(
+            await send_verification_otp_email_async(
                 req.email,
-                "Your OTP for GST ReconGraph Registration",
-                otp,
-                "Registration"
+                req.fullName.strip(),
+                otp
             )
         except Exception as e:
             # Email failed — clean up the OTP record so user can retry
@@ -98,6 +120,14 @@ async def verify_otp(request: Request, req: VerifyOTPRequest):
     await users_collection.update_one({"email": req.email}, {"$set": {"active": True}})
     await otps_collection.delete_one({"email": req.email})
 
+    # Trigger Registration / Welcome Email (Template 4)
+    user = await users_collection.find_one({"email": req.email})
+    user_name = (user.get("name") if user else "") or req.email.split("@")[0].capitalize()
+    try:
+        await send_welcome_email_async(req.email, user_name)
+    except Exception as e:
+        logger.warning("Failed to send welcome email to %s: %s", req.email, e)
+
     return {"message": "Account verified successfully! You can now log in."}
 
 @router.post("/login")
@@ -133,11 +163,11 @@ async def reset_password_request(request: Request, req: ResetPasswordRequest):
     )
 
     try:
-        await send_email_async(
+        user_name = user.get("name") or req.email.split("@")[0].capitalize()
+        await send_password_reset_otp_email_async(
             req.email,
-            "Your Password Reset OTP - GST ReconGraph",
-            otp,
-            "Password Reset"
+            user_name,
+            otp
         )
     except RuntimeError as e:
         await otps_collection.delete_one({"email": req.email})
@@ -169,6 +199,14 @@ async def reset_password_verify(request: Request, req: ResetPasswordVerifyReques
     hashed_pw = get_password_hash(req.newPassword)
     await users_collection.update_one({"email": req.email}, {"$set": {"password": hashed_pw}})
     await otps_collection.delete_one({"email": req.email})
+
+    # Trigger Password Successfully Changed Email (Template 3)
+    user = await users_collection.find_one({"email": req.email})
+    user_name = (user.get("name") if user else "") or req.email.split("@")[0].capitalize()
+    try:
+        await send_password_changed_email_async(req.email, user_name)
+    except Exception as e:
+        logger.warning("Failed to send password changed email to %s: %s", req.email, e)
 
     return {"message": "Password reset successfully. You can now log in."}
 
@@ -221,6 +259,12 @@ async def google_login(req: GoogleLoginRequest):
         }
         await users_collection.insert_one(user_doc)
         user = user_doc
+
+        # Trigger Registration / Welcome Email (Template 4)
+        try:
+            await send_welcome_email_async(email, name)
+        except Exception as e:
+            logger.warning("Failed to send welcome email to %s: %s", email, e)
     else:
         # If user exists but is inactive, mark them active since Google verified their email
         if not user.get("active", False):
@@ -234,3 +278,20 @@ async def google_login(req: GoogleLoginRequest):
         "name": user.get("name", name),
         "email": email,
     }
+
+@router.post("/notify-transaction")
+async def notify_transaction(req: TransactionNotificationRequest):
+    """Trigger Transaction Validation Result Email (Template 5)."""
+    try:
+        await send_transaction_validation_email_async(
+            to_email=req.email,
+            name=req.name or "User",
+            transaction_id=req.transaction_id,
+            status=req.status,
+            transaction_hash=req.transaction_hash,
+            timestamp=req.timestamp
+        )
+        return {"message": "Transaction validation email sent successfully."}
+    except Exception as e:
+        logger.error("Failed to send transaction validation email: %s", e)
+        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")

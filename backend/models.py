@@ -28,3 +28,11 @@ class GoogleLoginRequest(BaseModel):
     name: Optional[str] = None
     picture: Optional[str] = None
 
+class TransactionNotificationRequest(BaseModel):
+    email: EmailStr
+    name: Optional[str] = "User"
+    transaction_id: str
+    status: str
+    transaction_hash: str
+    timestamp: Optional[str] = None
+

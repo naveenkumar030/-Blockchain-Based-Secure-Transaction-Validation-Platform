@@ -206,104 +206,264 @@ def get_user_email(request) -> str:
 def generate_otp() -> str:
     return str(random.randint(100000, 999999))
 
-def send_email_sync(to_email: str, subject: str, otp_code: str, purpose: str = "Registration"):
-    """Send an OTP email using SMTP SSL. Raises on failure so callers are aware."""
+def send_mail_raw_sync(to_email: str, subject: str, text_body: str, html_body: str):
+    """Send an email using SMTP SSL (Gmail)."""
     if not EMAIL_USER or not EMAIL_PASS:
-        print("WARNING: Email credentials not configured in .env (EMAIL_USER / EMAIL_PASS). Cannot send OTP.")
+        print("WARNING: Email credentials not configured in .env (EMAIL_USER / EMAIL_PASS).")
         raise RuntimeError("Email service is not configured. Please contact the administrator.")
-
-    # Build HTML email for a better look
-    html_body = f"""\
-    <html><body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;">
-      <div style="max-width:480px;margin:auto;background:#fff;border-radius:10px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
-        <h2 style="color:#3c2ada;margin-bottom:8px;">GST ReconGraph</h2>
-        <p style="color:#444;font-size:15px;">Your <b>{purpose}</b> OTP code is:</p>
-        <div style="font-size:36px;font-weight:bold;letter-spacing:10px;color:#3c2ada;margin:24px 0;text-align:center;">{otp_code}</div>
-        <p style="color:#888;font-size:12px;">This code expires in <b>15 minutes</b>. Do not share it with anyone.</p>
-        <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
-        <p style="color:#aaa;font-size:11px;">If you did not request this, please ignore this email.</p>
-      </div>
-    </body></html>
-    """
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"] = EMAIL_USER
+    msg["From"] = f"SecureChain <{EMAIL_USER}>"
     msg["To"] = to_email
-    msg.attach(MIMEText(f"Your OTP is: {otp_code}. It expires in 15 minutes.", "plain"))
+    msg.attach(MIMEText(text_body, "plain"))
     msg.attach(MIMEText(html_body, "html"))
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as server:
             server.login(EMAIL_USER, EMAIL_PASS)
             server.send_message(msg)
-        print(f"OTP email sent successfully to {to_email}")
+        print(f"Email '{subject}' sent successfully to {to_email}")
     except smtplib.SMTPAuthenticationError:
         print(f"SMTP Authentication failed for {EMAIL_USER}. Check EMAIL_USER and EMAIL_PASS in .env")
         raise RuntimeError("Email authentication failed. Please contact the administrator.")
     except Exception as e:
         print(f"Error sending email to {to_email}: {e}")
-        raise RuntimeError(f"Failed to send OTP email: {str(e)}")
+        raise RuntimeError(f"Failed to send email: {str(e)}")
 
-async def send_email_async(to_email: str, subject: str, otp_code: str, purpose: str = "Registration"):
-    """
-    Sends email. If BREVO_API_KEY is configured, sends via Brevo HTTP API.
-    Otherwise, falls back to SMTP (standard Gmail SMTP).
-    If sending fails (e.g. SMTP blocked on Render Free tier), it logs the OTP
-    to standard output so it can be retrieved from the server logs, allowing
-    the application flow to continue successfully.
-    """
+
+async def send_mail_raw_async(to_email: str, subject: str, text_body: str, html_body: str):
+    """Send an email asynchronously with Brevo and SMTP SSL support."""
     brevo_api_key = os.getenv("BREVO_API_KEY")
     if brevo_api_key:
-        # Build HTML email
-        html_body = f"""\
-        <html><body style="font-family:Arial,sans-serif;background:#f4f4f4;padding:30px;">
-          <div style="max-width:480px;margin:auto;background:#fff;border-radius:10px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
-            <h2 style="color:#3c2ada;margin-bottom:8px;">GST ReconGraph</h2>
-            <p style="color:#444;font-size:15px;">Your <b>{purpose}</b> OTP code is:</p>
-            <div style="font-size:36px;font-weight:bold;letter-spacing:10px;color:#3c2ada;margin:24px 0;text-align:center;">{otp_code}</div>
-            <p style="color:#888;font-size:12px;">This code expires in <b>15 minutes</b>. Do not share it with anyone.</p>
-            <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
-            <p style="color:#aaa;font-size:11px;">If you did not request this, please ignore this email.</p>
-          </div>
-        </body></html>
-        """
         import httpx
         try:
             payload = {
-                "sender": {"email": EMAIL_USER or "mruhevents@gmail.com", "name": "GST ReconGraph"},
+                "sender": {"email": EMAIL_USER or "mruhevents@gmail.com", "name": "SecureChain"},
                 "to": [{"email": to_email}],
                 "subject": subject,
                 "htmlContent": html_body,
-                "textContent": f"Your OTP is: {otp_code}. It expires in 15 minutes."
+                "textContent": text_body,
             }
             headers = {
                 "accept": "application/json",
                 "api-key": brevo_api_key,
-                "content-type": "application/json"
+                "content-type": "application/json",
             }
             async with httpx.AsyncClient(timeout=10.0) as client:
                 res = await client.post("https://api.brevo.com/v3/smtp/email", json=payload, headers=headers)
                 if res.status_code >= 400:
-                    raise RuntimeError(f"Brevo API returned error: {res.text}")
-            print(f"OTP email sent successfully via Brevo to {to_email}")
+                    raise RuntimeError(f"Brevo API error: {res.text}")
+            print(f"Email '{subject}' sent successfully via Brevo to {to_email}")
             return
         except Exception as e:
             print(f"WARNING: Brevo API email failed: {e}")
-            print(f"--------------------------------------------------")
-            print(f"[OTP LOG FALLBACK] Use OTP: {otp_code} for {to_email}")
-            print(f"--------------------------------------------------")
-            return
 
-    # Fallback to SMTP SSL (runs in thread pool)
     try:
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, send_email_sync, to_email, subject, otp_code, purpose)
+        await loop.run_in_executor(None, send_mail_raw_sync, to_email, subject, text_body, html_body)
     except Exception as e:
-        print(f"WARNING: SMTP email failed: {e}")
+        print(f"WARNING: SMTP email delivery failed: {e}")
         print(f"--------------------------------------------------")
-        print(f"[OTP LOG FALLBACK] Use OTP: {otp_code} for {to_email}")
+        print(f"[EMAIL FALLBACK LOG] To: {to_email} | Subject: {subject}")
+        print(text_body)
         print(f"--------------------------------------------------")
         return
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 1. OTP Verification Email
+# ─────────────────────────────────────────────────────────────────────────────
+async def send_verification_otp_email_async(to_email: str, name: str, otp: str):
+    name_display = name or "User"
+    subject = "SecureChain — Verify Your Email"
+    text_body = f"""Hi {name_display},
+Welcome to SecureChain.
+Your one-time verification code is:
+{otp}
+This OTP is valid for 10 minutes.
+Please do not share this code with anyone.
+If you did not request this verification, you can safely ignore this email.
+Regards,
+SecureChain Team
+Blockchain Transaction Validation Platform"""
+    html_body = f"""\
+    <html><body style="font-family:Arial,sans-serif;background:#f8fafc;padding:30px;color:#1e293b;">
+      <div style="max-width:480px;margin:auto;background:#ffffff;border-radius:12px;padding:32px;border:1px solid #e2e8f0;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+        <h2 style="color:#2563eb;margin:0 0 16px;font-size:20px;font-weight:700;">🔐 SecureChain</h2>
+        <p style="font-size:15px;margin:0 0 12px;">Hi <b>{name_display}</b>,</p>
+        <p style="font-size:14px;color:#475569;margin:0 0 20px;">Welcome to SecureChain.</p>
+        <p style="font-size:13px;color:#64748b;margin:0 0 8px;">Your one-time verification code is:</p>
+        <div style="font-size:36px;font-weight:bold;letter-spacing:10px;color:#2563eb;background:#f1f5f9;padding:16px 0;text-align:center;border-radius:8px;margin:0 0 20px;">{otp}</div>
+        <p style="font-size:13px;color:#64748b;margin:0 0 6px;">This OTP is valid for <b>10 minutes</b>.</p>
+        <p style="font-size:13px;color:#e11d48;margin:0 0 20px;font-weight:500;">Please do not share this code with anyone.</p>
+        <p style="font-size:12px;color:#94a3b8;margin:0 0 24px;">If you did not request this verification, you can safely ignore this email.</p>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
+        <p style="font-size:13px;color:#334155;margin:0;">Regards,<br><b>SecureChain Team</b><br><span style="font-size:11px;color:#64748b;">Blockchain Transaction Validation Platform</span></p>
+      </div>
+    </body></html>
+    """
+    await send_mail_raw_async(to_email, subject, text_body, html_body)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 2. Forgot Password Email
+# ─────────────────────────────────────────────────────────────────────────────
+async def send_password_reset_otp_email_async(to_email: str, name: str, otp: str):
+    name_display = name or "User"
+    subject = "SecureChain — Password Reset Request"
+    text_body = f"""Hi {name_display},
+We received a request to reset the password for your SecureChain account.
+Your password reset OTP is:
+{otp}
+This code is valid for 10 minutes.
+If you did not request a password reset, please ignore this email and do not share the OTP with anyone.
+Regards,
+SecureChain Team"""
+    html_body = f"""\
+    <html><body style="font-family:Arial,sans-serif;background:#f8fafc;padding:30px;color:#1e293b;">
+      <div style="max-width:480px;margin:auto;background:#ffffff;border-radius:12px;padding:32px;border:1px solid #e2e8f0;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+        <h2 style="color:#2563eb;margin:0 0 16px;font-size:20px;font-weight:700;">🔐 SecureChain</h2>
+        <p style="font-size:15px;margin:0 0 12px;">Hi <b>{name_display}</b>,</p>
+        <p style="font-size:14px;color:#475569;margin:0 0 20px;">We received a request to reset the password for your SecureChain account.</p>
+        <p style="font-size:13px;color:#64748b;margin:0 0 8px;">Your password reset OTP is:</p>
+        <div style="font-size:36px;font-weight:bold;letter-spacing:10px;color:#2563eb;background:#f1f5f9;padding:16px 0;text-align:center;border-radius:8px;margin:0 0 20px;">{otp}</div>
+        <p style="font-size:13px;color:#64748b;margin:0 0 20px;">This code is valid for <b>10 minutes</b>.</p>
+        <p style="font-size:12px;color:#94a3b8;margin:0 0 24px;">If you did not request a password reset, please ignore this email and do not share the OTP with anyone.</p>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
+        <p style="font-size:13px;color:#334155;margin:0;">Regards,<br><b>SecureChain Team</b></p>
+      </div>
+    </body></html>
+    """
+    await send_mail_raw_async(to_email, subject, text_body, html_body)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3. Password Successfully Changed Email
+# ─────────────────────────────────────────────────────────────────────────────
+async def send_password_changed_email_async(to_email: str, name: str):
+    name_display = name or "User"
+    subject = "SecureChain — Password Changed Successfully"
+    text_body = f"""Hi {name_display},
+Your SecureChain account password has been successfully changed.
+If you made this change, no further action is required.
+If you did not make this change, please contact the administrator immediately.
+Regards,
+SecureChain Team"""
+    html_body = f"""\
+    <html><body style="font-family:Arial,sans-serif;background:#f8fafc;padding:30px;color:#1e293b;">
+      <div style="max-width:480px;margin:auto;background:#ffffff;border-radius:12px;padding:32px;border:1px solid #e2e8f0;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+        <h2 style="color:#2563eb;margin:0 0 16px;font-size:20px;font-weight:700;">🔐 SecureChain</h2>
+        <p style="font-size:15px;margin:0 0 12px;">Hi <b>{name_display}</b>,</p>
+        <p style="font-size:14px;color:#475569;margin:0 0 16px;">Your SecureChain account password has been successfully changed.</p>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px;margin-bottom:20px;">
+          <p style="font-size:13px;color:#166534;margin:0;">If you made this change, no further action is required.</p>
+        </div>
+        <p style="font-size:12px;color:#e11d48;margin:0 0 24px;">If you did not make this change, please contact the administrator immediately.</p>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
+        <p style="font-size:13px;color:#334155;margin:0;">Regards,<br><b>SecureChain Team</b></p>
+      </div>
+    </body></html>
+    """
+    await send_mail_raw_async(to_email, subject, text_body, html_body)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4. Registration / Welcome Email
+# ─────────────────────────────────────────────────────────────────────────────
+async def send_welcome_email_async(to_email: str, name: str):
+    name_display = name or "User"
+    subject = "Welcome to SecureChain"
+    text_body = f"""Hi {name_display},
+Welcome to SecureChain — Blockchain Transaction Validation Platform.
+Your account has been successfully created.
+You can now securely create and validate transactions, view transaction history, and track blockchain records.
+Regards,
+SecureChain Team"""
+    html_body = f"""\
+    <html><body style="font-family:Arial,sans-serif;background:#f8fafc;padding:30px;color:#1e293b;">
+      <div style="max-width:480px;margin:auto;background:#ffffff;border-radius:12px;padding:32px;border:1px solid #e2e8f0;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+        <h2 style="color:#2563eb;margin:0 0 16px;font-size:20px;font-weight:700;">🔐 SecureChain</h2>
+        <p style="font-size:15px;margin:0 0 12px;">Hi <b>{name_display}</b>,</p>
+        <p style="font-size:14px;color:#475569;margin:0 0 16px;">Welcome to <b>SecureChain</b> — Blockchain Transaction Validation Platform.</p>
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;margin-bottom:20px;">
+          <p style="font-size:13px;color:#1e40af;margin:0;">Your account has been successfully created.</p>
+        </div>
+        <p style="font-size:13px;color:#475569;margin:0 0 24px;line-height:1.6;">You can now securely create and validate transactions, view transaction history, and track blockchain records.</p>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
+        <p style="font-size:13px;color:#334155;margin:0;">Regards,<br><b>SecureChain Team</b></p>
+      </div>
+    </body></html>
+    """
+    await send_mail_raw_async(to_email, subject, text_body, html_body)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5. Transaction Validation Email (Optional / Extended)
+# ─────────────────────────────────────────────────────────────────────────────
+async def send_transaction_validation_email_async(
+    to_email: str,
+    name: str,
+    transaction_id: str,
+    status: str,
+    transaction_hash: str,
+    timestamp: str = None
+):
+    name_display = name or "User"
+    ts_display = timestamp or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    subject = "SecureChain — Transaction Validation Result"
+    text_body = f"""Hi {name_display},
+Your transaction {transaction_id} has been processed.
+Status: {status}
+Transaction Hash:
+{transaction_hash}
+Timestamp:
+{ts_display}
+You can log in to SecureChain to view the complete validation details.
+Regards,
+SecureChain Team"""
+    html_body = f"""\
+    <html><body style="font-family:Arial,sans-serif;background:#f8fafc;padding:30px;color:#1e293b;">
+      <div style="max-width:480px;margin:auto;background:#ffffff;border-radius:12px;padding:32px;border:1px solid #e2e8f0;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+        <h2 style="color:#2563eb;margin:0 0 16px;font-size:20px;font-weight:700;">🔐 SecureChain</h2>
+        <p style="font-size:15px;margin:0 0 12px;">Hi <b>{name_display}</b>,</p>
+        <p style="font-size:14px;color:#475569;margin:0 0 16px;">Your transaction <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-family:monospace;">{transaction_id}</code> has been processed.</p>
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:20px;font-size:13px;">
+          <div style="margin-bottom:8px;"><b>Status:</b> <span style="color:#16a34a;font-weight:600;">{status}</span></div>
+          <div style="margin-bottom:8px;"><b>Transaction Hash:</b><br><code style="font-family:monospace;word-break:break-all;color:#2563eb;">{transaction_hash}</code></div>
+          <div><b>Timestamp:</b> <span style="color:#64748b;">{ts_display}</span></div>
+        </div>
+        <p style="font-size:13px;color:#475569;margin:0 0 24px;">You can log in to SecureChain to view the complete validation details.</p>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
+        <p style="font-size:13px;color:#334155;margin:0;">Regards,<br><b>SecureChain Team</b></p>
+      </div>
+    </body></html>
+    """
+    await send_mail_raw_async(to_email, subject, text_body, html_body)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Backwards-compatible router dispatcher
+# ─────────────────────────────────────────────────────────────────────────────
+async def send_email_async(to_email: str, subject: str = None, otp_code: str = None, purpose: str = "Registration", name: str = "User"):
+    """Backwards-compatible wrapper routing to the new SecureChain templates."""
+    if purpose == "Password Reset":
+        await send_password_reset_otp_email_async(to_email, name, otp_code)
+    else:
+        await send_verification_otp_email_async(to_email, name, otp_code)
+
+
+def send_email_sync(to_email: str, subject: str, otp_code: str, purpose: str = "Registration"):
+    """Backwards-compatible synchronous wrapper."""
+    if purpose == "Password Reset":
+        subject = "SecureChain — Password Reset Request"
+        text_body = f"Hi User,\n\nWe received a request to reset the password for your SecureChain account.\nYour password reset OTP is:\n{otp_code}\n\nThis code is valid for 10 minutes.\n\nRegards,\nSecureChain Team"
+        html_body = f"<html><body><p>Your password reset code is: <b>{otp_code}</b>. It is valid for 10 minutes.</p></body></html>"
+    else:
+        subject = "SecureChain — Verify Your Email"
+        text_body = f"Hi User,\n\nWelcome to SecureChain.\nYour one-time verification code is:\n{otp_code}\n\nThis OTP is valid for 10 minutes.\n\nRegards,\nSecureChain Team\nBlockchain Transaction Validation Platform"
+        html_body = f"<html><body><p>Your verification code is: <b>{otp_code}</b>. It is valid for 10 minutes.</p></body></html>"
+    send_mail_raw_sync(to_email, subject, text_body, html_body)
+
 
 

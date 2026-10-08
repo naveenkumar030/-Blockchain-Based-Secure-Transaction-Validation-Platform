@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Mail, Lock, Eye, EyeOff, RotateCcw, ArrowRight,
   Network, CheckCircle2, Building2, Briefcase, ChevronDown,
-  ShieldCheck, BarChart3, Users,
+  ShieldCheck, BarChart3, Users, Link2,
 } from 'lucide-react';
 import AuthBackground from '../components/AuthBackground';
 
@@ -27,9 +27,9 @@ function getPasswordStrength(p) {
 const STEPS = ['Account Info', 'Verification', 'Organization'];
 
 const FEATURES = [
-  { icon: ShieldCheck, label: 'Fraud Detection',     desc: 'Graph-based fraud pattern analysis' },
-  { icon: BarChart3,   label: 'Smart Reconciliation', desc: 'AI-assisted invoice matching at scale' },
-  { icon: Users,       label: 'Team Workspace',      desc: 'Collaborative audit management' },
+  { icon: ShieldCheck,  emoji: '🔐', label: 'Cryptographic Security',  desc: 'Protect transactions using SHA-256 hashing and digital signatures.' },
+  { icon: CheckCircle2, emoji: '✅', label: 'Transaction Validation',  desc: 'Verify transaction authenticity, integrity, and validity before recording it.' },
+  { icon: Link2,        emoji: '⛓️', label: 'Immutable Blockchain',     desc: 'Store validated transactions in linked blocks with tamper-evident records.' },
 ];
 
 function StepIndicator({ currentStep }) {
@@ -222,8 +222,8 @@ export default function Register() {
         <div className="flex items-center gap-3 relative z-10">
           <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl shadow-lg object-contain bg-white/5 p-0.5" />
           <div>
-            <h1 className="text-[17px] font-bold text-white leading-tight">GST Reconciliation</h1>
-            <p className="text-[11px] text-slate-400 font-medium">Reconciliation Intelligence</p>
+            <h1 className="text-[17px] font-bold text-white leading-tight">SecureChain</h1>
+            <p className="text-[11px] text-slate-400 font-medium">Blockchain Transaction Security</p>
           </div>
         </div>
 
@@ -231,10 +231,10 @@ export default function Register() {
         <div className="relative z-10 space-y-6">
           <div>
             <h2 className="text-[36px] font-bold text-white leading-[1.15] tracking-tight">
-              Enterprise GST<br />Intelligence Platform
+              Secure Blockchain<br />Transaction Validation Platform
             </h2>
             <p className="text-[15px] text-slate-400 mt-4 leading-relaxed max-w-sm">
-              Reconcile invoices, detect fraud patterns, and manage GST compliance with graph-powered analytics.
+              Securely create, verify, and track digital transactions using cryptographic hashing, digital signatures, and blockchain technology.
             </p>
           </div>
 
@@ -246,7 +246,7 @@ export default function Register() {
                   <f.icon size={15} className="text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-[13px] font-semibold text-white">{f.label}</p>
+                  <p className="text-[13px] font-semibold text-white">{f.emoji} {f.label}</p>
                   <p className="text-[11px] text-slate-400">{f.desc}</p>
                 </div>
               </div>
@@ -266,7 +266,7 @@ export default function Register() {
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden">
             <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg shadow-sm object-contain" />
-            <span className="text-[15px] font-bold text-gray-900">GST Reconciliation</span>
+            <span className="text-[15px] font-bold text-gray-900">SecureChain</span>
           </div>
 
           <div className="bg-white rounded-2xl shadow-[0_8px_40px_rgba(15,23,42,0.08)] border border-gray-100 px-5 sm:px-8 py-7 sm:py-10 relative overflow-hidden">
@@ -280,7 +280,7 @@ export default function Register() {
 
             <div className="mb-6">
               <h2 className="text-[24px] font-bold text-gray-900 tracking-tight">Create your account</h2>
-              <p className="text-[13px] text-gray-500 mt-1">Start reconciling in minutes.</p>
+              <p className="text-[13px] text-gray-500 mt-1">Join your secure transaction workspace in minutes.</p>
             </div>
 
             <StepIndicator currentStep={step} />

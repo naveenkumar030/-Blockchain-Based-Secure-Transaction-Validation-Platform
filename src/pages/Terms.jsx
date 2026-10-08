@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Network, ArrowLeft, Shield, FileText, Lock, Eye,
-  Database, AlertTriangle, Users, Mail, ChevronRight,
+  Database, AlertTriangle, Users, Mail, ChevronRight, CheckCircle2,
 } from 'lucide-react';
 
 const LAST_UPDATED = 'July 1, 2026';
@@ -16,15 +16,15 @@ const SECTIONS = [
     title: 'Acceptance of Terms',
     color: 'text-blue-600',
     bg: 'bg-blue-50',
-    content: `By accessing or using GST ReconGraph ("Platform", "Service", "we", "us", or "our"), you confirm that you have read, understood, and agree to be bound by these Terms & Conditions and our Privacy Policy. If you do not agree to these terms, you must not use our services.
+    content: `By accessing or using SecureChain ("Platform", "Service", "we", "us", or "our"), you confirm that you have read, understood, and agree to these Terms & Conditions and our Privacy Policy.
+If you do not agree to these terms, you must not use the Platform.
 
-These Terms constitute a legally binding agreement between you ("User", "Client", "you") and GST ReconGraph Technologies Pvt. Ltd., a company incorporated under the Companies Act, 2013, with its registered office in Mumbai, Maharashtra, India.
-
-By registering, subscribing, or using any part of the Platform, you represent that:
+By registering or using SecureChain, you represent that:
 • You are at least 18 years of age.
-• You have the authority to bind your organization to these Terms.
-• All information you provide is accurate and complete.
-• Your use complies with all applicable laws and regulations, including the Goods and Services Tax Act, 2017.`,
+• The information you provide is accurate and complete.
+• You have authorization to create and submit the transactions you process through the Platform.
+• You will use the Platform only for lawful purposes.
+• You will not attempt to manipulate, forge, or compromise blockchain records or cryptographic mechanisms.`,
   },
   {
     id: 'service',
@@ -32,16 +32,23 @@ By registering, subscribing, or using any part of the Platform, you represent th
     title: 'Description of Service',
     color: 'text-violet-600',
     bg: 'bg-violet-50',
-    content: `GST ReconGraph is an enterprise-grade GST reconciliation, invoice mismatch analysis, and graph-based fraud detection platform designed for finance teams, chartered accountants, GST consultants, internal auditors, and tax compliance officers.
+    content: `SecureChain is a blockchain-based transaction validation and monitoring platform designed to demonstrate secure digital transaction processing using blockchain and cryptographic technologies.
 
-Core services provided include:
-• Automated reconciliation of Purchase Register (PR) data against GSTR-2B filings.
-• Invoice matching, discrepancy detection, and ITC risk scoring.
-• Graph-based fraud detection using network analysis to identify circular trading, duplicate invoices, and suspicious entity clusters.
-• Audit trail generation, compliance reporting, and case management for fraud investigations.
-• Data upload, normalization, and structured storage for multi-period analysis.
+Core capabilities include:
+• Transaction creation and validation.
+• Unique transaction ID and nonce generation.
+• SHA-256 transaction hashing.
+• Digital signature generation and verification.
+• Transaction integrity and authenticity verification.
+• Duplicate and conflicting transaction detection.
+• Block creation and blockchain linking.
+• Previous-block hash verification.
+• Transaction and block traceability.
+• Blockchain integrity and tamper detection.
+• Administrative monitoring and validation analysis.
+• Graph-based visualization of transactions and blocks using Neo4j.
 
-The Platform is provided on a subscription basis ("SaaS"). Features and access levels vary by subscription tier as described in your Order Form or subscription agreement.`,
+The Platform is designed to provide transparent and traceable transaction-validation results.`,
   },
   {
     id: 'data',
@@ -49,45 +56,48 @@ The Platform is provided on a subscription basis ("SaaS"). Features and access l
     title: 'Data Usage & Privacy',
     color: 'text-green-600',
     bg: 'bg-green-50',
-    content: `Your financial and tax data is treated with the highest level of confidentiality and security.
+    content: `SecureChain may process information required to create and validate transactions.
 
-Data Processing:
-• All data uploaded to the Platform (Purchase Registers, GSTR-2B JSON, GSTIN details, invoice records) is processed solely for the purpose of providing the reconciliation and fraud detection services you have subscribed to.
-• We do not sell, share, or license your data to any third party for commercial purposes.
-• Anonymized, aggregated, and non-identifiable statistical data may be used to improve our algorithms and platform performance.
+User Data:
+Account information may include:
+• Name
+• Email address
+• User role
+• Authentication information
+• Account activity
 
-Data Residency:
-• All data is stored exclusively on servers located within India, compliant with applicable data localization requirements.
-• We use AES-256 encryption at rest and TLS 1.3 in transit for all data.
+Transaction Data:
+Transaction records may include:
+• Transaction ID
+• Sender and receiver identifiers
+• Transaction amount
+• Nonce
+• Timestamp
+• Transaction hash
+• Digital signature
+• Validation status
+• Block information
 
-Data Retention:
-• Active subscription: Data retained for the duration of the subscription plus 90 days.
-• Upon cancellation: Data is available for export for 30 days, then permanently deleted.
-• You may request data deletion at any time by contacting bayyanaveen15@gmail.com.`,
+Transaction data is processed for the purpose of transaction validation, blockchain recording, monitoring, and auditability.
+
+We do not intentionally request sensitive personal information that is unnecessary for the operation of the Platform. Users should avoid including unnecessary personal or confidential information in transaction fields.`,
   },
   {
-    id: 'security',
+    id: 'crypto-security',
     icon: Shield,
-    title: 'Security & Compliance',
-    color: 'text-blue-700',
-    bg: 'bg-blue-50',
-    content: `We maintain industry-leading security practices to protect your sensitive financial data.
+    title: 'Cryptographic Security & Blockchain Integrity',
+    color: 'text-cyan-700',
+    bg: 'bg-cyan-50',
+    content: `SecureChain uses cryptographic mechanisms to protect transaction integrity.
 
-Security Certifications & Practices:
-• SOC 2 Type II certified infrastructure.
-• ISO 27001 compliant information security management.
-• Regular third-party penetration testing (bi-annual).
-• Multi-factor authentication (MFA) enforced for all user accounts.
-• Role-based access control (RBAC) with least-privilege principles.
+SHA-256 Hashing:
+Transactions and blocks may be processed using SHA-256 hashing to generate cryptographic fingerprints. Changing transaction information can result in a different hash and may cause the transaction or blockchain integrity check to fail.
 
-Your Responsibilities:
-• You are responsible for maintaining the confidentiality of your account credentials.
-• You must promptly notify us of any unauthorized access or security breach at bayyanaveen15@gmail.com.
-• You must not share your account credentials with unauthorized individuals.
-• You are responsible for all activities that occur under your account.
+Digital Signatures:
+Digital signatures may be used to verify that a transaction was authorized by the associated account or key holder. Users are responsible for protecting their private cryptographic keys.
 
-Breach Notification:
-In the event of a confirmed data breach affecting your organization's data, we will notify you within 72 hours of becoming aware of the breach, as required under applicable data protection laws.`,
+Blockchain Integrity:
+Blocks contain cryptographic references to previous blocks. This structure allows the Platform to detect unauthorized modifications to previously recorded blockchain data.`,
   },
   {
     id: 'user-obligations',
@@ -95,18 +105,46 @@ In the event of a confirmed data breach affecting your organization's data, we w
     title: 'User Obligations & Prohibited Use',
     color: 'text-amber-600',
     bg: 'bg-amber-50',
-    content: `By using the Platform, you agree to use it only for lawful purposes and in compliance with all applicable laws, including the GST Act, 2017, and the Information Technology Act, 2000.
+    content: `Users agree to use SecureChain only for legitimate and authorized activities.
 
 You must NOT:
-• Upload false, fraudulent, or fabricated invoice data.
-• Use the Platform to facilitate tax evasion, circular trading fraud, or money laundering.
-• Attempt to reverse-engineer, decompile, or extract our proprietary reconciliation algorithms.
-• Share access credentials or API keys with unauthorized third parties.
-• Scrape, crawl, or automate unauthorized data extraction from the Platform.
-• Interfere with, disrupt, or attempt to breach the security of our servers or networks.
-• Use the Platform to conduct or facilitate any activity that is illegal under Indian law.
+• Submit fraudulent or intentionally misleading transactions.
+• Attempt to forge digital signatures.
+• Attempt to modify blockchain records without authorization.
+• Attempt to reuse or manipulate transaction nonces to bypass validation.
+• Attempt double-spending or conflicting transaction attacks.
+• Attempt to gain unauthorized access to another user's account.
+• Attempt to access another user's private keys or credentials.
+• Attempt to bypass transaction-validation mechanisms.
+• Attempt to disrupt, damage, or compromise the Platform.
+• Upload malicious software or code.
+• Use the Platform for illegal activities.
 
-Violations may result in immediate account suspension, termination, and/or legal action. We reserve the right to cooperate with law enforcement authorities and share relevant information in cases of suspected fraudulent or illegal activity.`,
+Violations may result in account suspension or termination and may be reported to appropriate authorities where required by law.`,
+  },
+  {
+    id: 'validation',
+    icon: CheckCircle2,
+    title: 'Blockchain Records & Transaction Validation',
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-50',
+    content: `Transactions submitted to SecureChain may pass through multiple validation stages, including:
+• Transaction structure validation.
+• Authentication and authorization checks.
+• Digital signature verification.
+• Hash generation and integrity verification.
+• Duplicate transaction detection.
+• Nonce and transaction-order validation.
+• Conflict or suspicious-transaction detection.
+• Block validation.
+• Blockchain integrity verification.
+
+A transaction may be classified as:
+• Valid — The transaction successfully passes the required validation rules.
+• Rejected — The transaction fails one or more validation rules.
+• Suspicious — The transaction contains characteristics that require additional review.
+
+Validation results are intended to provide traceable evidence of how a transaction was processed.`,
   },
   {
     id: 'intellectual-property',
@@ -114,18 +152,15 @@ Violations may result in immediate account suspension, termination, and/or legal
     title: 'Intellectual Property',
     color: 'text-rose-600',
     bg: 'bg-rose-50',
-    content: `All intellectual property rights in the Platform — including but not limited to the reconciliation algorithms, fraud detection models, graph analytics engine, user interface, documentation, trademarks, and trade names — are owned by or licensed to GST ReconGraph Technologies Pvt. Ltd.
+    content: `All intellectual property associated with SecureChain, including its software architecture, source code, user interface, documentation, blockchain implementation, validation logic, and branding, belongs to the respective project owners or licensors.
 
-Your Rights:
-• Subject to your subscription, we grant you a limited, non-exclusive, non-transferable, revocable license to use the Platform for your internal business purposes.
-• This license does not include the right to sublicense, resell, or create derivative works based on the Platform.
+Users may not:
+• Copy or redistribute the Platform without authorization.
+• Reverse engineer the Platform for unauthorized purposes.
+• Reproduce proprietary components without permission.
+• Use the Platform's branding or materials without authorization.
 
-Your Data:
-• You retain full ownership of all data you upload to the Platform.
-• You grant us a limited license to process your data solely for providing the services.
-
-Our IP:
-• You may not copy, reproduce, distribute, or create derivative works from any part of our Platform without our prior written consent.`,
+Users retain ownership of information they legitimately submit to the Platform, subject to the rights necessary to operate the service.`,
   },
   {
     id: 'liability',
@@ -133,39 +168,40 @@ Our IP:
     title: 'Limitation of Liability & Disclaimers',
     color: 'text-orange-600',
     bg: 'bg-orange-50',
-    content: `The Platform is provided "as is" and "as available" for informational and reconciliation assistance purposes.
+    content: `SecureChain is provided for transaction-validation, blockchain demonstration, research, and decision-support purposes.
 
 Important Disclaimers:
-• GST ReconGraph is a tool to assist in GST reconciliation and does not constitute professional tax, legal, or financial advice.
-• Final tax filings, ITC claims, and compliance decisions remain the sole responsibility of your organization and your qualified tax professionals.
-• We do not guarantee that reconciliation results are 100% accurate or free from errors.
+• Blockchain validation results should not automatically be treated as legal, financial, or regulatory advice.
+• The Platform does not guarantee that every transaction will be detected or classified correctly.
+• Cryptographic systems depend on correct implementation and secure key management.
+• Users are responsible for protecting their account credentials and private keys.
+• Blockchain records may be difficult or impossible to modify after confirmation.
+• The Platform should not be considered a replacement for regulated financial or payment infrastructure.
 
-Limitation of Liability:
-To the maximum extent permitted by applicable law, GST ReconGraph Technologies Pvt. Ltd. shall not be liable for:
-• Indirect, incidental, special, consequential, or punitive damages.
-• Loss of profits, revenue, data, or business opportunities.
-• Any damages arising from your reliance on reconciliation results for statutory filing purposes.
-
-Our aggregate liability to you for any claim arising under these Terms shall not exceed the total fees paid by you to us in the 3 months preceding the claim.`,
+Users should independently verify important transactions before relying on them for financial or legal decisions.`,
   },
   {
     id: 'termination',
     icon: FileText,
-    title: 'Termination & Suspension',
+    title: 'Account Security & Termination',
     color: 'text-gray-600',
     bg: 'bg-gray-50',
-    content: `Termination by You:
-You may cancel your subscription at any time through the Platform settings or by contacting bayyanaveen15@gmail.com. Cancellation takes effect at the end of your current billing period. No refunds are provided for unused portions of a billing period unless required by law.
+    content: `Users are responsible for maintaining the security of their:
+• Login credentials
+• Authentication information
+• Private keys
+• Digital-signature credentials
 
-Termination by Us:
-We may suspend or terminate your account immediately, without notice, if:
-• You breach any provision of these Terms.
-• We are required to do so by law or court order.
-• Your use of the Platform poses a risk to our security or other users.
-• We reasonably suspect fraudulent or illegal activity.
+Users should immediately report suspected unauthorized access or compromised credentials.
 
-Effect of Termination:
-Upon termination, your right to use the Platform ceases immediately. We will provide a 30-day data export window after which your data will be permanently deleted.`,
+We may suspend or terminate an account if:
+• The user violates these Terms.
+• Unauthorized activity is detected.
+• The Platform's security is threatened.
+• The account is used for fraudulent or illegal activity.
+• Suspension is required by applicable law.
+
+Upon termination, access to the Platform may be restricted. Blockchain records that have already been confirmed may remain as part of the blockchain ledger.`,
   },
   {
     id: 'governing-law',
@@ -173,15 +209,11 @@ Upon termination, your right to use the Platform ceases immediately. We will pro
     title: 'Governing Law & Dispute Resolution',
     color: 'text-indigo-600',
     bg: 'bg-indigo-50',
-    content: `These Terms are governed by and construed in accordance with the laws of India.
+    content: `These Terms are governed by the applicable laws of India.
 
-Dispute Resolution Process:
-1. Informal Resolution: In the event of any dispute, the parties agree to first attempt to resolve it informally by contacting bayyanaveen15@gmail.com.
-2. Mediation: If informal resolution fails within 30 days, either party may initiate mediation through a mutually agreed mediator in Mumbai.
-3. Arbitration: Unresolved disputes shall be settled by binding arbitration in accordance with the Arbitration and Conciliation Act, 1996, with a single arbitrator seated in Mumbai, Maharashtra.
-4. Courts: Both parties submit to the exclusive jurisdiction of the courts in Mumbai, Maharashtra for any matter not subject to arbitration.
+Any dispute relating to the use of SecureChain should first be addressed through good-faith communication between the involved parties.
 
-Class Action Waiver: You agree to resolve disputes only on an individual basis and waive any right to participate in a class action or collective proceeding.`,
+Where applicable, disputes may be subject to the jurisdiction of the appropriate courts in India.`,
   },
   {
     id: 'contact',
@@ -189,7 +221,7 @@ Class Action Waiver: You agree to resolve disputes only on an individual basis a
     title: 'Contact Us',
     color: 'text-blue-600',
     bg: 'bg-blue-50',
-    content: `If you have questions about these Terms, our Privacy Policy, or your data, please contact us:
+    content: `If you have questions about these Terms, transaction validation, account security, or the Platform, please contact:
 
 Naveen Kumar
 📞 6305996739
@@ -223,12 +255,12 @@ export default function Terms() {
             <div className="h-5 w-px bg-gray-200" />
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="Logo" className="w-6 h-6 rounded-md shadow-sm object-contain" />
-              <span className="text-[13px] font-bold text-gray-900">GST ReconGraph</span>
+              <span className="text-[13px] font-bold text-gray-900">SecureChain</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/login"     className="text-[13px] font-semibold text-blue-600 hover:underline">Sign In</Link>
-            <Link to="/register"  className="btn-primary text-[12px] py-1.5 px-3">Get Started</Link>
+            <Link to="/register"  className="btn-primary text-[12px] py-1.5 px-3">Create Account</Link>
           </div>
         </div>
       </header>
@@ -250,7 +282,7 @@ export default function Terms() {
             Terms & Conditions
           </h1>
           <p className="text-[15px] text-gray-500 mt-2">
-            Please read these terms carefully before using the GST ReconGraph platform.
+            Please read these terms carefully before using the SecureChain platform.
           </p>
           <div className="flex flex-wrap items-center gap-4 mt-4">
             <span className="flex items-center gap-1.5 text-[12px] text-gray-500">
@@ -314,10 +346,10 @@ export default function Terms() {
               <div>
                 <p className="text-[14px] font-bold text-amber-900">Important Summary</p>
                 <p className="text-[13px] text-amber-800 mt-1 leading-relaxed">
-                  By using GST ReconGraph, you agree to: (1) use the platform only for lawful GST compliance purposes,
-                  (2) maintain confidentiality of your account credentials, (3) acknowledge that reconciliation results
-                  are for informational purposes and final tax decisions remain your responsibility. Your data stays in India
-                  and is never sold to third parties.
+                  By using SecureChain, you agree to: (1) use the platform only for lawful and authorized transaction-validation purposes, (2) keep your account credentials and cryptographic keys secure, (3) provide accurate transaction information, and (4) understand that validated blockchain records are designed to be tamper-evident and may not be editable through normal application operations.
+                </p>
+                <p className="text-[13px] text-amber-800 mt-2 font-medium leading-relaxed">
+                  SecureChain is a blockchain-based transaction validation platform designed for secure transaction processing, cryptographic verification, blockchain recording, and transaction monitoring.
                 </p>
               </div>
             </motion.div>
@@ -368,11 +400,11 @@ export default function Terms() {
                 Ready to get started?
               </h3>
               <p className="text-[13px] text-slate-400 mb-6 max-w-sm mx-auto">
-                By creating an account, you confirm you have read and agree to these Terms & Conditions.
+                By creating an account, you confirm that you have read and agree to these Terms & Conditions.
               </p>
               <div className="flex items-center justify-center gap-3 flex-wrap">
                 <Link to="/register" className="btn-primary">
-                  Create Free Account
+                  Create Account
                 </Link>
                 <Link
                   to="/login"

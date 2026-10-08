@@ -78,10 +78,10 @@ export default function Sidebar({ collapsed, setCollapsed, setMobileOpen, onNewA
         {!collapsed && (
           <div className="flex-1 min-w-0 overflow-hidden">
             <h1 className="text-[14px] font-bold text-white truncate leading-tight tracking-tight">
-              GST Reconciliation
+              SecureChain
             </h1>
             <p className="text-[10px] text-[#6B7280] font-medium truncate mt-0.5">
-              Reconciliation Intelligence
+              Blockchain Transaction Intelligence
             </p>
           </div>
         )}

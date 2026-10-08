@@ -25,10 +25,10 @@ export default function GetStarted() {
           <img src="/logo.png" alt="Logo" className="w-full h-full object-contain drop-shadow" />
         </div>
         <h1 className="text-white text-[42px] font-bold leading-tight text-center font-display-lg">
-          GST<br/>Reconciliation
+          SecureChain
         </h1>
         <p className="text-[#a4d4bc] mt-4 text-center max-w-xs font-body-lg">
-          Enterprise-grade automated reconciliation and audit intelligence.
+          Blockchain Transaction Validation Platform.
         </p>
       </motion.div>
 

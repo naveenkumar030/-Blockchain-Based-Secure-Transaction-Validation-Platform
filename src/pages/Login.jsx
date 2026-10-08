@@ -64,7 +64,7 @@ export default function Login() {
           <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl shadow-lg object-contain bg-white/5 p-0.5" />
           <div>
             <h1 className="text-[17px] font-bold text-white leading-tight">SecureChain</h1>
-            <p className="text-[11px] text-slate-400 font-medium">Blockchain Transaction Security</p>
+            <p className="text-[11px] text-slate-400 font-medium">Blockchain Transaction Intelligence</p>
           </div>
         </div>
 

@@ -50,11 +50,11 @@ function StepIndicator({ currentStep }) {
                 {done ? <CheckCircle2 size={14} /> : i + 1}
               </div>
               <span className={`text-[10px] font-medium mt-1 whitespace-nowrap ${
-                active ? 'text-blue-600' : done ? 'text-gray-600' : 'text-gray-400'
+                active ? 'text-[#D97757]' : done ? 'text-[#595856]' : 'text-[#8C8980]'
               }`}>{label}</span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className={`flex-1 h-0.5 mx-1 mt-[-12px] transition-all duration-500 ${done ? 'bg-blue-600' : 'bg-gray-200'}`} />
+              <div className={`flex-1 h-0.5 mx-1 mt-[-12px] transition-all duration-500 ${done ? 'bg-[#D97757]' : 'bg-[#E8E6DC]'}`} />
             )}
           </div>
         );
@@ -67,11 +67,11 @@ function StepIndicator({ currentStep }) {
 function Field({ label, id, focused, children }) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-[13px] font-semibold text-gray-700">{label}</label>
+      <label htmlFor={id} className="block text-[13px] font-semibold text-[#141413]">{label}</label>
       <div className={`relative flex items-center rounded-lg border transition-all duration-200 bg-white ${
         focused
-          ? 'border-blue-500 ring-2 ring-blue-500/15 shadow-sm'
-          : 'border-gray-200 hover:border-gray-300'
+          ? 'border-[#D97757] ring-2 ring-[#D97757]/15 shadow-sm'
+          : 'border-[#E8E6DC] hover:border-[#D5D2C7]'
       }`}>
         {children}
       </div>
@@ -178,7 +178,7 @@ export default function Register() {
         localStorage.setItem('userName', loginData.name || formData.fullName.trim());
         localStorage.setItem('userEmail', loginData.email || formData.email);
         localStorage.removeItem('gst_upload_activity');
-        setTimeout(() => navigate('/dashboard'), 800);
+        setTimeout(() => navigate('/blockchain/dashboard'), 800);
       } catch {
         setTimeout(() => navigate('/login'), 1200);
       }
@@ -218,17 +218,17 @@ export default function Register() {
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="hidden lg:flex flex-col justify-between w-[420px] shrink-0 bg-[#0F172A] px-12 py-14 relative overflow-hidden"
+        className="hidden lg:flex flex-col justify-between w-[420px] shrink-0 bg-[#141413] px-12 py-14 relative overflow-hidden"
       >
-        <div className="absolute top-[-80px] left-[-80px] w-[320px] h-[320px] rounded-full bg-blue-600/20 blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-[-60px] right-[-60px] w-[260px] h-[260px] rounded-full bg-violet-600/20 blur-[100px] pointer-events-none" />
+        <div className="absolute top-[-80px] left-[-80px] w-[320px] h-[320px] rounded-full bg-[#D97757]/20 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-[-60px] right-[-60px] w-[260px] h-[260px] rounded-full bg-[#C66545]/15 blur-[100px] pointer-events-none" />
 
         {/* Logo */}
         <div className="flex items-center gap-3 relative z-10">
           <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl shadow-lg object-contain bg-white/5 p-0.5" />
           <div>
             <h1 className="text-[17px] font-bold text-white leading-tight">SecureChain</h1>
-            <p className="text-[11px] text-slate-400 font-medium">Blockchain Transaction Intelligence</p>
+            <p className="text-[11px] text-[#8C8980] font-medium">Blockchain Transaction Intelligence</p>
           </div>
         </div>
 
@@ -238,7 +238,7 @@ export default function Register() {
             <h2 className="text-[36px] font-bold text-white leading-[1.15] tracking-tight">
               Secure Blockchain<br />Transaction Validation Platform
             </h2>
-            <p className="text-[15px] text-slate-400 mt-4 leading-relaxed max-w-sm">
+            <p className="text-[15px] text-[#FAF9F5]/70 mt-4 leading-relaxed max-w-sm">
               Securely create, verify, and track digital transactions using cryptographic hashing, digital signatures, and blockchain technology.
             </p>
           </div>
@@ -247,12 +247,12 @@ export default function Register() {
           <div className="space-y-3">
             {FEATURES.map((f) => (
               <div key={f.label} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/8 backdrop-blur-sm">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
-                  <f.icon size={15} className="text-blue-400" />
+                <div className="w-8 h-8 rounded-lg bg-[#D97757]/20 flex items-center justify-center shrink-0">
+                  <f.icon size={15} className="text-[#D97757]" />
                 </div>
                 <div>
                   <p className="text-[13px] font-semibold text-white">{f.emoji} {f.label}</p>
-                  <p className="text-[11px] text-slate-400">{f.desc}</p>
+                  <p className="text-[11px] text-[#8C8980]">{f.desc}</p>
                 </div>
               </div>
             ))}
@@ -271,21 +271,21 @@ export default function Register() {
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden">
             <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg shadow-sm object-contain" />
-            <span className="text-[15px] font-bold text-gray-900">SecureChain</span>
+            <span className="text-[15px] font-bold text-[#141413]">SecureChain</span>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-[0_8px_40px_rgba(15,23,42,0.08)] border border-gray-100 px-5 sm:px-8 py-7 sm:py-10 relative overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-[0_8px_40px_rgba(20,20,19,0.06)] border border-[#E8E6DC] px-5 sm:px-8 py-7 sm:py-10 relative overflow-hidden">
             {/* Accent line */}
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: step === 0 ? '50%' : '100%' }}
               transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-              className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-blue-600 to-violet-500"
+              className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-[#D97757] to-[#C66545]"
             />
 
             <div className="mb-6">
-              <h2 className="text-[24px] font-bold text-gray-900 tracking-tight">Create your account</h2>
-              <p className="text-[13px] text-gray-500 mt-1">Join your secure transaction workspace in minutes.</p>
+              <h2 className="text-[24px] font-bold text-[#141413] tracking-tight">Create your account</h2>
+              <p className="text-[13px] text-[#595856] mt-1">Join your secure transaction workspace in minutes.</p>
             </div>
 
             <StepIndicator currentStep={step} />
@@ -385,20 +385,20 @@ export default function Register() {
                   <label className="flex items-start gap-2.5 cursor-pointer">
                     <input type="checkbox" checked={formData.terms}
                       onChange={(e) => setFormData({ ...formData, terms: e.target.checked })}
-                      className="w-4 h-4 mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0"
+                      className="w-4 h-4 mt-0.5 rounded border-[#E8E6DC] text-[#D97757] focus:ring-[#D97757] cursor-pointer shrink-0"
                     />
-                    <span className="text-[12px] text-gray-600 leading-relaxed">
+                    <span className="text-[12px] text-[#595856] leading-relaxed">
                       I agree to the{' '}
-                      <Link to="/terms" className="font-semibold text-blue-600 hover:underline">Terms & Conditions</Link>
+                      <Link to="/terms" className="font-semibold text-[#D97757] hover:underline">Terms & Conditions</Link>
                       {' '}and{' '}
-                      <Link to="/terms" className="font-semibold text-blue-600 hover:underline">Privacy Policy</Link>.
+                      <Link to="/terms" className="font-semibold text-[#D97757] hover:underline">Privacy Policy</Link>.
                     </span>
                   </label>
 
                   <motion.button
                     whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
                     type="button" disabled={loading} onClick={handleSendOTP}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-[14px] font-semibold rounded-xl shadow-[0_4px_14px_rgba(37,99,235,0.3)] transition-all mt-2"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#D97757] hover:bg-[#C66545] disabled:opacity-60 text-white text-[14px] font-semibold rounded-xl shadow-[0_4px_14px_rgba(217,119,87,0.3)] transition-all mt-2"
                   >
                     {loading ? <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : (
                       <>Continue <ArrowRight size={15} strokeWidth={2.5} /></>
@@ -411,12 +411,12 @@ export default function Register() {
               {step === 1 && (
                 <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }} className="space-y-5">
                   <div className="text-center py-2">
-                    <div className="w-14 h-14 bg-blue-50 border border-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                      <Mail size={24} className="text-blue-600" />
+                    <div className="w-14 h-14 bg-[#FDF4F0] border border-[#F0C5B5] rounded-2xl flex items-center justify-center mx-auto mb-3">
+                      <Mail size={24} className="text-[#D97757]" />
                     </div>
-                    <p className="text-[14px] font-semibold text-gray-900">Check your email</p>
-                    <p className="text-[12px] text-gray-500 mt-1">
-                      We sent a 6-digit code to <strong className="text-gray-900">{formData.email}</strong>
+                    <p className="text-[14px] font-semibold text-[#141413]">Check your email</p>
+                    <p className="text-[12px] text-[#595856] mt-1">
+                      We sent a 6-digit code to <strong className="text-[#141413]">{formData.email}</strong>
                     </p>
                   </div>
 
@@ -430,8 +430,8 @@ export default function Register() {
                         value={digit}
                         onChange={(e) => handleOtpChange(idx, e.target.value)}
                         onKeyDown={(e) => handleOtpKey(idx, e)}
-                        className={`w-12 h-12 border-2 rounded-xl text-center text-[18px] font-bold text-gray-900 outline-none transition-all bg-white focus:scale-105 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 ${
-                          digit ? 'border-blue-600 shadow-sm' : 'border-gray-200'
+                        className={`w-12 h-12 border-2 rounded-xl text-center text-[18px] font-bold text-[#141413] outline-none transition-all bg-white focus:scale-105 focus:border-[#D97757] focus:ring-2 focus:ring-[#D97757]/20 ${
+                          digit ? 'border-[#D97757] shadow-sm' : 'border-[#E8E6DC]'
                         }`}
                         placeholder="·"
                       />
@@ -441,7 +441,7 @@ export default function Register() {
                   <motion.button
                     whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
                     type="button" disabled={loading} onClick={handleVerifyOTP}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-[14px] font-semibold rounded-xl shadow-[0_4px_14px_rgba(37,99,235,0.3)] transition-all"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#D97757] hover:bg-[#C66545] disabled:opacity-60 text-white text-[14px] font-semibold rounded-xl shadow-[0_4px_14px_rgba(217,119,87,0.3)] transition-all"
                   >
                     {loading ? <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : (
                       <>Verify & Launch Workspace <ArrowRight size={15} strokeWidth={2.5} /></>
@@ -450,7 +450,7 @@ export default function Register() {
 
                   <div className="text-center">
                     <button type="button" onClick={handleResetOTP}
-                      className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+                      className="text-[12px] font-semibold text-[#D97757] hover:text-[#C66545] hover:underline"
                     >
                       Didn't receive it? Reset & Resend OTP
                     </button>
@@ -459,9 +459,9 @@ export default function Register() {
               )}
             </AnimatePresence>
 
-            <p className="text-center text-[13px] text-gray-600 mt-6">
+            <p className="text-center text-[13px] text-[#595856] mt-6">
               Already have an account?{' '}
-              <Link to="/login" className="font-bold text-blue-600 hover:text-blue-700 hover:underline">Sign in</Link>
+              <Link to="/login" className="font-bold text-[#D97757] hover:text-[#C66545] hover:underline">Sign in</Link>
             </p>
           </div>
         </motion.div>

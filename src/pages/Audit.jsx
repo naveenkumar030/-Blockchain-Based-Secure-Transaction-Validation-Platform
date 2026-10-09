@@ -164,8 +164,8 @@ export default function Audit() {
                   typeFilter === t
                     ? cfg
                       ? `${cfg.bg} ${cfg.color} border-transparent`
-                      : 'bg-gray-900 text-white border-transparent'
-                    : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                      : 'bg-[#141413] text-white border-transparent shadow-xs'
+                    : 'bg-white text-[#5C5A55] border-[#E8E6DC] hover:border-[#141413]'
                 }`}
               >
                 {t === 'all' ? 'All Events' : (cfg?.label ?? t)}

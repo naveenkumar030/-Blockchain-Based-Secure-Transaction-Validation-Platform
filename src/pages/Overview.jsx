@@ -592,17 +592,17 @@ export default function Overview() {
                         onMouseLeave={() => setHoveredBar(null)}
                       >
                         {isHovered && (
-                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap z-20 pointer-events-none shadow-lg">
-                            <span className={isHigh ? 'text-red-400' : 'text-blue-400'}>{d.risk}%</span>
-                            <span className="text-gray-400 ml-1">risk</span>
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
+                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#141413] text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap z-20 pointer-events-none shadow-lg">
+                            <span className={isHigh ? 'text-red-400' : 'text-[#D97757]'}>{d.risk}%</span>
+                            <span className="text-[#FAF9F5]/70 ml-1">risk</span>
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#141413]" />
                           </div>
                         )}
                         <div
                           className={`w-full rounded-t-md transition-all duration-700 ease-out ${
                             isHovered
-                              ? isHigh ? 'bg-red-500' : 'bg-blue-500'
-                              : isHigh ? 'bg-red-200' : 'bg-blue-100'
+                              ? isHigh ? 'bg-red-500' : 'bg-[#D97757]'
+                              : isHigh ? 'bg-red-200' : 'bg-[#FDF4F0]'
                           }`}
                           style={{
                             height: barsVisible ? `${h}%` : '2%',

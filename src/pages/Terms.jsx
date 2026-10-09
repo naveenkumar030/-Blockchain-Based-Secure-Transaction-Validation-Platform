@@ -239,27 +239,27 @@ export default function Terms() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FAF9F5]">
 
       {/* ── Top bar ── */}
-      <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-gray-200 h-14 flex items-center px-6">
+      <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-[#E8E6DC] h-14 flex items-center px-6">
         <div className="max-w-6xl mx-auto w-full flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-[13px] font-medium text-gray-500 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-2 text-[13px] font-medium text-[#5C5A55] hover:text-[#141413] transition-colors"
             >
               <ArrowLeft size={16} />
               Back
             </button>
-            <div className="h-5 w-px bg-gray-200" />
+            <div className="h-5 w-px bg-[#E8E6DC]" />
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="Logo" className="w-6 h-6 rounded-md shadow-sm object-contain" />
-              <span className="text-[13px] font-bold text-gray-900">SecureChain</span>
+              <span className="text-[13px] font-bold text-[#141413]">SecureChain</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/login"     className="text-[13px] font-semibold text-blue-600 hover:underline">Sign In</Link>
+            <Link to="/login"     className="text-[13px] font-semibold text-[#D97757] hover:underline">Sign In</Link>
             <Link to="/register"  className="btn-primary text-[12px] py-1.5 px-3">Create Account</Link>
           </div>
         </div>
@@ -274,28 +274,28 @@ export default function Terms() {
           transition={{ duration: 0.4 }}
           className="mb-10"
         >
-          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full mb-4">
+          <div className="inline-flex items-center gap-2 bg-[#FDF4F0] border border-[#D97757]/30 text-[#D97757] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full mb-4">
             <Shield size={12} />
             Legal Document
           </div>
-          <h1 className="text-[36px] font-bold text-gray-900 tracking-tight leading-tight">
+          <h1 className="text-[36px] font-bold text-[#141413] tracking-tight leading-tight">
             Terms & Conditions
           </h1>
-          <p className="text-[15px] text-gray-500 mt-2">
+          <p className="text-[15px] text-[#5C5A55] mt-2">
             Please read these terms carefully before using the SecureChain platform.
           </p>
           <div className="flex flex-wrap items-center gap-4 mt-4">
-            <span className="flex items-center gap-1.5 text-[12px] text-gray-500">
-              <FileText size={13} className="text-gray-400" />
+            <span className="flex items-center gap-1.5 text-[12px] text-[#5C5A55]">
+              <FileText size={13} className="text-[#8C8980]" />
               Version {VERSION}
             </span>
-            <span className="text-gray-300">·</span>
-            <span className="text-[12px] text-gray-500">Last updated: {LAST_UPDATED}</span>
-            <span className="text-gray-300">·</span>
-            <span className="text-[12px] text-gray-500">Effective immediately</span>
+            <span className="text-[#E8E6DC]">·</span>
+            <span className="text-[12px] text-[#5C5A55]">Last updated: {LAST_UPDATED}</span>
+            <span className="text-[#E8E6DC]">·</span>
+            <span className="text-[12px] text-[#5C5A55]">Effective immediately</span>
             <button
               onClick={() => window.print()}
-              className="ml-auto text-[12px] font-semibold text-blue-600 hover:underline"
+              className="ml-auto text-[12px] font-semibold text-[#D97757] hover:underline"
             >
               Print / Download PDF →
             </button>
@@ -311,19 +311,19 @@ export default function Terms() {
             transition={{ duration: 0.4, delay: 0.1 }}
             className="hidden lg:block w-64 shrink-0"
           >
-            <div className="sticky top-24 bg-white rounded-2xl border border-gray-200 shadow-soft p-5 space-y-1">
-              <p className="label-caps text-gray-400 mb-3">Table of Contents</p>
+            <div className="sticky top-24 bg-white rounded-2xl border border-[#E8E6DC] shadow-sm p-5 space-y-1">
+              <p className="label-caps text-[#8C8980] mb-3">Table of Contents</p>
               {SECTIONS.map((s, i) => (
                 <button
                   key={s.id}
                   onClick={() => scroll(s.id)}
                   className={`w-full flex items-center gap-2.5 text-left px-3 py-2 rounded-lg text-[12px] font-medium transition-all ${
                     activeId === s.id
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-[#FDF4F0] text-[#D97757]'
+                      : 'text-[#5C5A55] hover:bg-[#FAF9F5] hover:text-[#141413]'
                   }`}
                 >
-                  <span className="text-[10px] text-gray-400 font-mono w-4 shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-[10px] text-[#8C8980] font-mono w-4 shrink-0">{String(i + 1).padStart(2, '0')}</span>
                   <span className="truncate">{s.title}</span>
                   {activeId === s.id && <ChevronRight size={12} className="shrink-0 ml-auto" />}
                 </button>
@@ -362,24 +362,24 @@ export default function Terms() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 + i * 0.04 }}
-                className="bg-white rounded-2xl border border-gray-200 shadow-soft overflow-hidden scroll-mt-24"
+                className="bg-white rounded-2xl border border-[#E8E6DC] shadow-sm overflow-hidden scroll-mt-24"
               >
                 {/* Section header */}
-                <div className="flex items-center gap-4 px-6 py-5 border-b border-gray-100">
+                <div className="flex items-center gap-4 px-6 py-5 border-b border-[#E8E6DC]/60">
                   <div className={`w-10 h-10 ${section.bg} rounded-xl flex items-center justify-center shrink-0`}>
                     <section.icon size={18} className={section.color} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-gray-400 font-mono">{String(i + 1).padStart(2, '0')}</span>
-                      <h2 className="text-[16px] font-bold text-gray-900">{section.title}</h2>
+                      <span className="text-[10px] font-bold text-[#8C8980] font-mono">{String(i + 1).padStart(2, '0')}</span>
+                      <h2 className="text-[16px] font-bold text-[#141413]">{section.title}</h2>
                     </div>
                   </div>
                 </div>
 
                 {/* Section body */}
                 <div className="px-6 py-5">
-                  <div className="text-[13px] text-gray-700 leading-[1.8] whitespace-pre-line">
+                  <div className="text-[13px] text-[#5C5A55] leading-[1.8] whitespace-pre-line">
                     {section.content}
                   </div>
                 </div>
@@ -391,15 +391,15 @@ export default function Terms() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.5 }}
-              className="bg-[#0F172A] rounded-2xl p-8 text-center"
+              className="bg-[#141413] rounded-2xl p-8 text-center"
             >
-              <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 bg-[#D97757] rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Shield size={22} className="text-white" />
               </div>
               <h3 className="text-[20px] font-bold text-white mb-2">
                 Ready to get started?
               </h3>
-              <p className="text-[13px] text-slate-400 mb-6 max-w-sm mx-auto">
+              <p className="text-[13px] text-[#FAF9F5]/70 mb-6 max-w-sm mx-auto">
                 By creating an account, you confirm that you have read and agree to these Terms & Conditions.
               </p>
               <div className="flex items-center justify-center gap-3 flex-wrap">
@@ -413,9 +413,9 @@ export default function Terms() {
                   Sign In
                 </Link>
               </div>
-              <p className="text-[11px] text-slate-600 mt-5">
+              <p className="text-[11px] text-[#FAF9F5]/50 mt-5">
                 Questions? Email us at{' '}
-                <a href="mailto:bayyanaveen15@gmail.com" className="text-slate-400 hover:text-white underline">
+                <a href="mailto:bayyanaveen15@gmail.com" className="text-[#D97757] hover:underline">
                   bayyanaveen15@gmail.com
                 </a>
               </p>

@@ -25,6 +25,13 @@ export default function Login() {
 
 
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/blockchain/dashboard');
+    }
+  }, [navigate]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -36,7 +43,7 @@ export default function Login() {
       localStorage.setItem('userEmail', data.email || formData.email);
       // Clear any upload activity from a previous session so pages start clean
       localStorage.removeItem('gst_upload_activity');
-      navigate('/dashboard');
+      navigate('/blockchain/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -53,18 +60,18 @@ export default function Login() {
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="hidden lg:flex flex-col justify-between w-[480px] shrink-0 bg-[#0F172A] px-12 py-14 relative overflow-hidden"
+        className="hidden lg:flex flex-col justify-between w-[480px] shrink-0 bg-[#141413] px-12 py-14 relative overflow-hidden"
       >
         {/* Background glow */}
-        <div className="absolute top-[-80px] left-[-80px] w-[340px] h-[340px] rounded-full bg-blue-600/20 blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-[-60px] right-[-60px] w-[280px] h-[280px] rounded-full bg-violet-600/20 blur-[100px] pointer-events-none" />
+        <div className="absolute top-[-80px] left-[-80px] w-[340px] h-[340px] rounded-full bg-[#D97757]/20 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-[-60px] right-[-60px] w-[280px] h-[280px] rounded-full bg-[#C66545]/15 blur-[100px] pointer-events-none" />
 
         {/* Logo */}
         <div className="flex items-center gap-3 relative z-10">
           <img src="/logo.png" alt="Logo" className="w-10 h-10 rounded-xl shadow-lg object-contain bg-white/5 p-0.5" />
           <div>
             <h1 className="text-[17px] font-bold text-white leading-tight">SecureChain</h1>
-            <p className="text-[11px] text-slate-400 font-medium">Blockchain Transaction Intelligence</p>
+            <p className="text-[11px] text-[#8C8980] font-medium">Blockchain Transaction Intelligence</p>
           </div>
         </div>
 
@@ -74,7 +81,7 @@ export default function Login() {
             <h2 className="text-[36px] font-bold text-white leading-[1.15] tracking-tight">
               Secure Blockchain<br />Transaction Validation Platform
             </h2>
-            <p className="text-[15px] text-slate-400 mt-4 leading-relaxed max-w-sm">
+            <p className="text-[15px] text-[#FAF9F5]/70 mt-4 leading-relaxed max-w-sm">
               Securely create, verify, and track digital transactions using cryptographic hashing, digital signatures, and blockchain technology.
             </p>
           </div>
@@ -83,12 +90,12 @@ export default function Login() {
           <div className="space-y-3">
             {FEATURES.map((f) => (
               <div key={f.label} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/8 backdrop-blur-sm">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
-                  <f.icon size={15} className="text-blue-400" />
+                <div className="w-8 h-8 rounded-lg bg-[#D97757]/20 flex items-center justify-center shrink-0">
+                  <f.icon size={15} className="text-[#D97757]" />
                 </div>
                 <div>
                   <p className="text-[13px] font-semibold text-white">{f.emoji} {f.label}</p>
-                  <p className="text-[11px] text-slate-400">{f.desc}</p>
+                  <p className="text-[11px] text-[#8C8980]">{f.desc}</p>
                 </div>
               </div>
             ))}
@@ -107,22 +114,22 @@ export default function Login() {
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden">
             <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg shadow-sm object-contain" />
-            <span className="text-[15px] font-bold text-gray-900">SecureChain</span>
+            <span className="text-[15px] font-bold text-[#141413]">SecureChain</span>
           </div>
 
           {/* Card */}
-          <div className="bg-white rounded-2xl shadow-[0_8px_40px_rgba(15,23,42,0.08)] border border-gray-100 px-5 sm:px-8 py-7 sm:py-10 relative overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-[0_8px_40px_rgba(20,20,19,0.06)] border border-[#E8E6DC] px-5 sm:px-8 py-7 sm:py-10 relative overflow-hidden">
             {/* Top accent line */}
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: '40%' }}
               transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-              className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-blue-600 to-violet-500"
+              className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-[#D97757] to-[#C66545]"
             />
 
             <div className="mb-8">
-              <h2 className="text-[26px] font-bold text-gray-900 tracking-tight">Welcome back</h2>
-              <p className="text-[13px] text-gray-500 mt-1.5">
+              <h2 className="text-[26px] font-bold text-[#141413] tracking-tight">Welcome back</h2>
+              <p className="text-[13px] text-[#595856] mt-1.5">
                 Sign in to your secure transaction workspace.
               </p>
             </div>
@@ -148,17 +155,17 @@ export default function Login() {
 
               {/* Email */}
               <div className="space-y-1.5">
-                <label className="block text-[13px] font-semibold text-gray-700" htmlFor="login-email">
+                <label className="block text-[13px] font-semibold text-[#141413]" htmlFor="login-email">
                   Email Address
                 </label>
                 <div className={`relative flex items-center rounded-lg border transition-all duration-200 bg-white ${
                   focusedField === 'email'
-                    ? 'border-blue-500 ring-2 ring-blue-500/15 shadow-sm'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-[#D97757] ring-2 ring-[#D97757]/15 shadow-sm'
+                    : 'border-[#E8E6DC] hover:border-[#D5D2C7]'
                 }`}>
                   <Mail
                     size={16}
-                    className={`absolute left-3.5 transition-colors ${focusedField === 'email' ? 'text-blue-500' : 'text-gray-400'}`}
+                    className={`absolute left-3.5 transition-colors ${focusedField === 'email' ? 'text-[#D97757]' : 'text-[#8C8980]'}`}
                     strokeWidth={1.8}
                   />
                   <input
@@ -171,7 +178,7 @@ export default function Login() {
                     onFocus={() => setFocusedField('email')}
                     onBlur={() => setFocusedField(null)}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full py-3 pl-10 pr-4 text-[14px] text-gray-900 bg-transparent outline-none rounded-lg placeholder:text-gray-400"
+                    className="w-full py-3 pl-10 pr-4 text-[14px] text-[#141413] bg-transparent outline-none rounded-lg placeholder:text-[#8C8980]"
                   />
                 </div>
               </div>
@@ -179,24 +186,24 @@ export default function Login() {
               {/* Password */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="block text-[13px] font-semibold text-gray-700" htmlFor="login-password">
+                  <label className="block text-[13px] font-semibold text-[#141413]" htmlFor="login-password">
                     Password
                   </label>
                   <Link
                     to="/reset-password"
-                    className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                    className="text-[12px] font-semibold text-[#D97757] hover:text-[#C66545] hover:underline transition-colors"
                   >
                     Forgot password?
                   </Link>
                 </div>
                 <div className={`relative flex items-center rounded-lg border transition-all duration-200 bg-white ${
                   focusedField === 'password'
-                    ? 'border-blue-500 ring-2 ring-blue-500/15 shadow-sm'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-[#D97757] ring-2 ring-[#D97757]/15 shadow-sm'
+                    : 'border-[#E8E6DC] hover:border-[#D5D2C7]'
                 }`}>
                   <Lock
                     size={16}
-                    className={`absolute left-3.5 transition-colors ${focusedField === 'password' ? 'text-blue-500' : 'text-gray-400'}`}
+                    className={`absolute left-3.5 transition-colors ${focusedField === 'password' ? 'text-[#D97757]' : 'text-[#8C8980]'}`}
                     strokeWidth={1.8}
                   />
                   <input
@@ -209,12 +216,12 @@ export default function Login() {
                     onFocus={() => setFocusedField('password')}
                     onBlur={() => setFocusedField(null)}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full py-3 pl-10 pr-11 text-[14px] text-gray-900 bg-transparent outline-none rounded-lg placeholder:text-gray-400"
+                    className="w-full py-3 pl-10 pr-11 text-[14px] text-[#141413] bg-transparent outline-none rounded-lg placeholder:text-[#8C8980]"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-3.5 p-1 text-[#8C8980] hover:text-[#141413] transition-colors"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff size={16} strokeWidth={1.8} /> : <Eye size={16} strokeWidth={1.8} />}
@@ -228,9 +235,9 @@ export default function Login() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  className="w-4 h-4 rounded border-[#E8E6DC] text-[#D97757] focus:ring-[#D97757] cursor-pointer"
                 />
-                <span className="text-[12px] text-gray-600">Remember me for 30 days</span>
+                <span className="text-[12px] text-[#595856]">Remember me for 30 days</span>
               </label>
 
               {/* Submit */}
@@ -239,7 +246,7 @@ export default function Login() {
                 whileTap={{ scale: 0.99 }}
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-[14px] font-semibold rounded-xl shadow-[0_4px_14px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.45)] transition-all"
+                className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#D97757] hover:bg-[#C66545] disabled:opacity-60 text-white text-[14px] font-semibold rounded-xl shadow-[0_4px_14px_rgba(217,119,87,0.35)] hover:shadow-[0_6px_20px_rgba(217,119,87,0.45)] transition-all"
               >
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
@@ -257,21 +264,19 @@ export default function Login() {
               </motion.button>
             </form>
 
-
-
-            <p className="text-center text-[13px] text-gray-600 mt-6">
+            <p className="text-center text-[13px] text-[#595856] mt-6">
               Don't have an account?{' '}
-              <Link to="/register" className="font-bold text-blue-600 hover:text-blue-700 hover:underline">
+              <Link to="/register" className="font-bold text-[#D97757] hover:text-[#C66545] hover:underline">
                 Create one free
               </Link>
             </p>
           </div>
 
-          <p className="text-center text-[11px] text-gray-400 mt-5">
+          <p className="text-center text-[11px] text-[#8C8980] mt-5">
             By signing in, you agree to our{' '}
-            <Link to="/terms" className="underline hover:text-gray-600">Terms of Service</Link>
+            <Link to="/terms" className="underline hover:text-[#595856]">Terms of Service</Link>
             {' '}and{' '}
-            <Link to="/terms" className="underline hover:text-gray-600">Privacy Policy</Link>.
+            <Link to="/terms" className="underline hover:text-[#595856]">Privacy Policy</Link>.
           </p>
         </motion.div>
       </div>

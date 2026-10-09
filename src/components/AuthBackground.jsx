@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 export default function AuthBackground() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-[-1] bg-[#fafafd]">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-[-1] bg-[#FAF9F5]">
       {/* Animated blob 1 */}
       <motion.div
         animate={{
@@ -16,7 +16,7 @@ export default function AuthBackground() {
           repeat: Infinity,
           ease: "linear"
         }}
-        className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#4335de]/10 blur-[100px] mix-blend-multiply"
+        className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#D97757]/10 blur-[100px] mix-blend-multiply"
       />
       {/* Animated blob 2 */}
       <motion.div
@@ -30,7 +30,7 @@ export default function AuthBackground() {
           repeat: Infinity,
           ease: "linear"
         }}
-        className="absolute bottom-[-10%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-[#9581f6]/10 blur-[100px] mix-blend-multiply"
+        className="absolute bottom-[-10%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-[#C66545]/8 blur-[100px] mix-blend-multiply"
       />
       {/* Animated blob 3 */}
       <motion.div
@@ -44,7 +44,7 @@ export default function AuthBackground() {
           repeat: Infinity,
           ease: "linear"
         }}
-        className="absolute top-[20%] left-[40%] w-[30vw] h-[30vw] rounded-full bg-blue-400/10 blur-[100px] mix-blend-multiply"
+        className="absolute top-[20%] left-[40%] w-[30vw] h-[30vw] rounded-full bg-[#E8E6DC]/40 blur-[100px] mix-blend-multiply"
       />
       
       {/* Subtle grid pattern overlay */}

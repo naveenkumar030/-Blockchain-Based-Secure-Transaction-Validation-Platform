@@ -14,9 +14,20 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  ShieldCheck,
+  PlusCircle,
+  CheckCircle2,
 } from 'lucide-react';
 
 const NAV_GROUPS = [
+  {
+    title: 'SECURECHAIN BLOCKCHAIN',
+    items: [
+      { id: '/blockchain/dashboard',           icon: ShieldCheck,  label: 'Blockchain Dashboard' },
+      { id: '/blockchain/transactions/create', icon: PlusCircle,   label: 'Create Transaction' },
+      { id: '/blockchain/verify',              icon: CheckCircle2, label: 'Verify Transaction' },
+    ],
+  },
   {
     title: 'WORKSPACE',
     items: [
@@ -53,7 +64,12 @@ const NAV_GROUPS = [
 export default function Sidebar({ collapsed, setCollapsed, setMobileOpen, onNewAudit }) {
   const navigate = useNavigate();
 
-  const handleLogout = () => navigate('/login');
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
+    navigate('/login');
+  };
 
   const storedName = localStorage.getItem('userName') || 'John Smith';
   const initials = storedName
@@ -66,34 +82,34 @@ export default function Sidebar({ collapsed, setCollapsed, setMobileOpen, onNewA
 
   return (
     <aside
-      className={`h-full flex flex-col bg-[#111827] text-white border-r border-[#1E2A3B] transition-all duration-200 ease-in-out ${
+      className={`h-full flex flex-col bg-[#FAF9F5] text-[#141413] border-r border-[#E8E6DC] transition-all duration-200 ease-in-out ${
         collapsed ? 'w-[72px]' : 'w-[240px]'
       }`}
     >
       {/* ── Logo ── */}
-      <div className={`h-16 flex items-center border-b border-[#1E2A3B] shrink-0 ${
+      <div className={`h-16 flex items-center border-b border-[#E8E6DC] shrink-0 ${
         collapsed ? 'justify-center px-4' : 'px-4 gap-3'
       }`}>
-        <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg shadow-lg object-contain" />
+        <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg shadow-sm object-contain" />
         {!collapsed && (
           <div className="flex-1 min-w-0 overflow-hidden">
-            <h1 className="text-[14px] font-bold text-white truncate leading-tight tracking-tight">
+            <h1 className="text-[14px] font-bold text-[#141413] truncate leading-tight tracking-tight">
               SecureChain
             </h1>
-            <p className="text-[10px] text-[#6B7280] font-medium truncate mt-0.5">
-              Blockchain Transaction Intelligence
+            <p className="text-[10px] text-[#595856] font-medium truncate mt-0.5">
+              Blockchain Intelligence
             </p>
           </div>
         )}
       </div>
 
       {/* ── New Audit CTA ── */}
-      <div className={`px-3 py-3 border-b border-[#1E2A3B] shrink-0 ${collapsed ? 'flex justify-center' : ''}`}>
+      <div className={`px-3 py-3 border-b border-[#E8E6DC] shrink-0 ${collapsed ? 'flex justify-center' : ''}`}>
         {collapsed ? (
           <div className="tooltip-container">
             <button
               onClick={onNewAudit}
-              className="w-10 h-10 bg-blue-600 hover:bg-blue-500 text-white rounded-lg flex items-center justify-center transition-colors shadow-sm"
+              className="w-10 h-10 bg-[#D97757] hover:bg-[#C66545] text-white rounded-lg flex items-center justify-center transition-colors shadow-sm"
               aria-label="New Audit"
             >
               <Plus size={18} />
@@ -103,7 +119,7 @@ export default function Sidebar({ collapsed, setCollapsed, setMobileOpen, onNewA
             </span>
           </div>
         ) : (
-          <button onClick={onNewAudit} className="w-full py-2 px-3 bg-blue-600 hover:bg-blue-500 text-white text-[13px] font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm">
+          <button onClick={onNewAudit} className="w-full py-2 px-3 bg-[#D97757] hover:bg-[#C66545] text-white text-[13px] font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm">
             <Plus size={16} />
             New Audit
           </button>
@@ -116,11 +132,11 @@ export default function Sidebar({ collapsed, setCollapsed, setMobileOpen, onNewA
           <div key={gi} className={`${gi > 0 ? 'mt-5' : ''}`}>
             {!collapsed && (
               <div className="px-4 mb-1.5">
-                <span className="label-caps text-[#4B5563]">{group.title}</span>
+                <span className="label-caps text-[#8C8980]">{group.title}</span>
               </div>
             )}
             {collapsed && gi > 0 && (
-              <div className="mx-3 mb-3 h-px bg-[#1E2A3B]" />
+              <div className="mx-3 mb-3 h-px bg-[#E8E6DC]" />
             )}
             <div className="space-y-0.5 px-2">
               {group.items.map((item) => (
@@ -164,10 +180,10 @@ export default function Sidebar({ collapsed, setCollapsed, setMobileOpen, onNewA
 
       {/* ── Collapse Toggle (desktop only) ── */}
       {setCollapsed && (
-        <div className={`px-3 py-2 border-t border-[#1E2A3B] shrink-0 ${collapsed ? 'flex justify-center' : 'flex justify-end'}`}>
+        <div className={`px-3 py-2 border-t border-[#E8E6DC] shrink-0 ${collapsed ? 'flex justify-center' : 'flex justify-end'}`}>
           <button
             onClick={() => setCollapsed((c) => !c)}
-            className="w-7 h-7 rounded-md bg-[#1E2A3B] hover:bg-[#2D3748] text-gray-400 hover:text-white flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-md bg-[#F5F3ED] hover:bg-[#E8E6DC] text-[#595856] hover:text-[#141413] border border-[#E8E6DC] flex items-center justify-center transition-colors"
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
@@ -176,19 +192,19 @@ export default function Sidebar({ collapsed, setCollapsed, setMobileOpen, onNewA
       )}
 
       {/* ── User Footer ── */}
-      <div className={`p-3 border-t border-[#1E2A3B] shrink-0 ${collapsed ? 'flex flex-col items-center gap-2' : ''}`}>
+      <div className={`p-3 border-t border-[#E8E6DC] shrink-0 ${collapsed ? 'flex flex-col items-center gap-2' : ''}`}>
         {!collapsed ? (
-          <div className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white/5 cursor-pointer group transition-colors">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shrink-0 text-[12px] font-bold text-white shadow-sm">
+          <div className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-[#F3F1EA] cursor-pointer group transition-colors">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#D97757] to-[#C66545] flex items-center justify-center shrink-0 text-[12px] font-bold text-white shadow-sm">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold text-white truncate leading-tight">{storedName}</p>
-              <p className="text-[11px] text-[#6B7280] truncate">Senior Auditor</p>
+              <p className="text-[13px] font-semibold text-[#141413] truncate leading-tight">{storedName}</p>
+              <p className="text-[11px] text-[#8C8980] truncate">Senior Auditor</p>
             </div>
             <button
               onClick={handleLogout}
-              className="p-1.5 text-gray-500 hover:text-white rounded-md hover:bg-white/10 transition-colors opacity-0 group-hover:opacity-100"
+              className="p-1.5 text-[#8C8980] hover:text-[#141413] rounded-md hover:bg-[#E8E6DC] transition-colors opacity-0 group-hover:opacity-100"
               title="Logout"
               aria-label="Logout"
             >
@@ -198,7 +214,7 @@ export default function Sidebar({ collapsed, setCollapsed, setMobileOpen, onNewA
         ) : (
           <>
             <div className="tooltip-container">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-[12px] font-bold text-white cursor-pointer">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#D97757] to-[#C66545] flex items-center justify-center text-[12px] font-bold text-white cursor-pointer shadow-sm">
                 {initials}
               </div>
               <span className="tooltip" style={{ left: '100%', bottom: 'auto', top: '50%', transform: 'translateY(-50%)', marginLeft: '10px' }}>
@@ -208,7 +224,7 @@ export default function Sidebar({ collapsed, setCollapsed, setMobileOpen, onNewA
             <div className="tooltip-container">
               <button
                 onClick={handleLogout}
-                className="w-8 h-8 text-gray-500 hover:text-white rounded-md hover:bg-white/10 transition-colors flex items-center justify-center"
+                className="w-8 h-8 text-[#8C8980] hover:text-[#141413] rounded-md hover:bg-[#F3F1EA] transition-colors flex items-center justify-center"
                 aria-label="Logout"
               >
                 <LogOut size={14} />

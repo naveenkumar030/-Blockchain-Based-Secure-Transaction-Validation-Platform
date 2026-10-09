@@ -31,7 +31,7 @@ function ToastContainer({ toasts, removeToast }) {
             t.type === 'success' ? 'bg-green-100 text-green-600' :
             t.type === 'error'   ? 'bg-red-100 text-red-600' :
             t.type === 'warning' ? 'bg-amber-100 text-amber-600' :
-            'bg-blue-100 text-blue-600'
+            'bg-[#FDF4F0] text-[#D97757]'
           }`}>
             {t.type === 'success' ? <CheckCircle2 size={16} /> :
              t.type === 'error'   ? <X size={16} /> :
@@ -39,12 +39,12 @@ function ToastContainer({ toasts, removeToast }) {
              <Info size={16} />}
           </div>
           <div className="flex-1 min-w-0">
-            {t.title && <p className="text-[13px] font-semibold text-gray-900">{t.title}</p>}
-            <p className="text-[12px] text-gray-600 mt-0.5">{t.message}</p>
+            {t.title && <p className="text-[13px] font-semibold text-[#141413]">{t.title}</p>}
+            <p className="text-[12px] text-[#595856] mt-0.5">{t.message}</p>
           </div>
           <button
             onClick={() => removeToast(t.id)}
-            className="shrink-0 p-1 text-gray-400 hover:text-gray-700 rounded transition-colors"
+            className="shrink-0 p-1 text-[#8C8980] hover:text-[#141413] rounded transition-colors"
             aria-label="Dismiss notification"
           >
             <X size={14} />
@@ -164,19 +164,19 @@ function ReconProgressModal({ onClose, onComplete }) {
           {/* Progress Bar */}
           <div className="mt-4">
             <div className="flex justify-between text-[12px] mb-1.5">
-              <span className="font-medium text-gray-700">
+              <span className="font-medium text-[#595856]">
                 {done ? 'All stages complete' : RECON_STAGES[currentStage]?.label}
               </span>
-              <span className="font-bold text-blue-600">{pct}%</span>
+              <span className="font-bold text-[#D97757]">{pct}%</span>
             </div>
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-2 bg-[#F5F3ED] rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-500 ease-out"
                 style={{
                   width: `${pct}%`,
                   background: done
-                    ? 'linear-gradient(90deg, #16A34A, #22C55E)'
-                    : 'linear-gradient(90deg, #2563EB, #3B82F6)',
+                    ? 'linear-gradient(90deg, #15803D, #22C55E)'
+                    : 'linear-gradient(90deg, #D97757, #C66545)',
                 }}
               />
             </div>
@@ -193,28 +193,28 @@ function ReconProgressModal({ onClose, onComplete }) {
               <div key={stage.id} className="flex items-start gap-3 py-1.5">
                 <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] transition-all duration-300 ${
                   isComplete ? 'bg-green-100 text-green-600' :
-                  isCurrent  ? 'bg-blue-100 text-blue-600 animate-pulse' :
-                  'bg-gray-100 text-gray-400'
+                  isCurrent  ? 'bg-[#FDF4F0] text-[#D97757] animate-pulse' :
+                  'bg-[#F5F3ED] text-[#8C8980]'
                 }`}>
                   {isComplete ? <CheckCircle2 size={12} /> :
-                   isCurrent  ? <div className="w-2 h-2 rounded-full bg-blue-500" /> :
-                   <div className="w-1.5 h-1.5 rounded-full bg-gray-300" />}
+                   isCurrent  ? <div className="w-2 h-2 rounded-full bg-[#D97757]" /> :
+                   <div className="w-1.5 h-1.5 rounded-full bg-[#E8E6DC]" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className={`text-[13px] font-medium leading-tight ${
-                    isComplete ? 'text-gray-900' :
-                    isCurrent  ? 'text-blue-700' :
-                    'text-gray-400'
+                    isComplete ? 'text-[#141413]' :
+                    isCurrent  ? 'text-[#D97757]' :
+                    'text-[#8C8980]'
                   }`}>{stage.label}</p>
                   {isCurrent && (
-                    <p className="text-[11px] text-gray-500 mt-0.5">{stage.desc}</p>
+                    <p className="text-[11px] text-[#595856] mt-0.5">{stage.desc}</p>
                   )}
                 </div>
                 {isComplete && (
                   <span className="text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded shrink-0">Done</span>
                 )}
                 {isPending && (
-                  <span className="text-[10px] text-gray-400 shrink-0">Queued</span>
+                  <span className="text-[10px] text-[#8C8980] shrink-0">Queued</span>
                 )}
               </div>
             );
@@ -320,7 +320,7 @@ export default function Layout() {
   return (
     <ToastContext.Provider value={addToast}>
       <ReconProgressContext.Provider value={openRecon}>
-        <div className="h-screen w-full flex bg-[#F8FAFC] text-[#0F172A] antialiased overflow-hidden">
+        <div className="h-screen w-full flex bg-[#FAF9F5] text-[#141413] antialiased overflow-hidden">
 
           {/* Desktop Sidebar */}
           <div className="hidden md:flex shrink-0 h-full z-40">
@@ -348,7 +348,7 @@ export default function Layout() {
               toggleMobileOpen={() => setMobileOpen(true)}
             />
 
-            <main className="flex-1 overflow-auto bg-[#F8FAFC]">
+            <main className="flex-1 overflow-auto bg-[#FAF9F5]">
               <div className="max-w-[1600px] mx-auto px-3 py-4 sm:px-4 sm:py-4 md:p-5 lg:p-6 pb-24">
                 <Outlet />
               </div>

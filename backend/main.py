@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, graph, reconciliation, dashboard, fraud
+from routers import auth, graph, reconciliation, dashboard, fraud, blockchain
 from utils import limiter
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -83,6 +83,7 @@ app.include_router(graph.router,          prefix="/api/graph",          tags=["g
 app.include_router(reconciliation.router, prefix="/api/reconciliation", tags=["reconciliation"])
 app.include_router(dashboard.router,      prefix="/api/dashboard",      tags=["dashboard"])
 app.include_router(fraud.router,          prefix="/api/fraud",          tags=["fraud"])
+app.include_router(blockchain.router,     prefix="/api/blockchain",     tags=["blockchain"])
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse

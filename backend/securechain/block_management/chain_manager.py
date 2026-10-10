@@ -15,6 +15,7 @@ from blockchain.database import (
     _local_cache,
     save_local_cache,
     clean_mongo_doc,
+    is_mongo_alive,
 )
 
 
@@ -57,9 +58,9 @@ class ChainManager:
 
     async def get_block_count(self) -> int:
         """Get total number of blocks in the chain."""
-        if bc_blocks_col is not None:
+        if (await is_mongo_alive()) and bc_blocks_col is not None:
             try:
-                count = await asyncio.wait_for(bc_blocks_col.count_documents({}), timeout=4.0)
+                count = await asyncio.wait_for(bc_blocks_col.count_documents({}), timeout=2.0)
                 if count > 0:
                     return count
             except Exception:
@@ -116,10 +117,10 @@ class ChainManager:
 
     async def get_block_by_height(self, height: int) -> Optional[BlockRecord]:
         """Query block by sequential height index."""
-        # Try MongoDB
-        if bc_blocks_col is not None:
+        # Try MongoDB if operational
+        if (await is_mongo_alive()) and bc_blocks_col is not None:
             try:
-                doc = await asyncio.wait_for(bc_blocks_col.find_one({"height": height}), timeout=4.0)
+                doc = await asyncio.wait_for(bc_blocks_col.find_one({"height": height}), timeout=2.0)
                 if doc:
                     return BlockRecord.from_dict(clean_mongo_doc(doc))
             except Exception:
@@ -133,10 +134,10 @@ class ChainManager:
 
     async def get_block_by_hash(self, block_hash: str) -> Optional[BlockRecord]:
         """Query block by SHA-256 header hash."""
-        # Try MongoDB
-        if bc_blocks_col is not None:
+        # Try MongoDB if operational
+        if (await is_mongo_alive()) and bc_blocks_col is not None:
             try:
-                doc = await asyncio.wait_for(bc_blocks_col.find_one({"hash": block_hash}), timeout=4.0)
+                doc = await asyncio.wait_for(bc_blocks_col.find_one({"hash": block_hash}), timeout=2.0)
                 if doc:
                     return BlockRecord.from_dict(clean_mongo_doc(doc))
             except Exception:
@@ -150,11 +151,11 @@ class ChainManager:
 
     async def get_chain(self, limit: int = 1000) -> List[BlockRecord]:
         """Return sequential list of confirmed blocks."""
-        # Try MongoDB
-        if bc_blocks_col is not None:
+        # Try MongoDB if operational
+        if (await is_mongo_alive()) and bc_blocks_col is not None:
             try:
                 cursor = bc_blocks_col.find({}).sort([("height", 1)]).limit(limit)
-                docs = await asyncio.wait_for(cursor.to_list(length=limit), timeout=4.0)
+                docs = await asyncio.wait_for(cursor.to_list(length=limit), timeout=2.0)
                 if docs:
                     cleaned = [clean_mongo_doc(d) for d in docs]
                     _local_cache["blocks"] = copy.deepcopy(cleaned)
@@ -177,8 +178,8 @@ class ChainManager:
         """Persist block to MongoDB and sync with local cache."""
         block_dict = block.to_dict()
 
-        # Try MongoDB
-        if bc_blocks_col is not None:
+        # Try MongoDB if operational
+        if (await is_mongo_alive()) and bc_blocks_col is not None:
             try:
                 await asyncio.wait_for(
                     bc_blocks_col.update_one(
@@ -186,7 +187,7 @@ class ChainManager:
                         {"$set": copy.deepcopy(block_dict)},
                         upsert=True
                     ),
-                    timeout=4.0
+                    timeout=2.0
                 )
             except Exception:
                 pass

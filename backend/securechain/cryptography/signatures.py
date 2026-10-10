@@ -9,13 +9,13 @@ Strict security rules:
 
 import hashlib
 from typing import Tuple, Dict
-from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.asymmetric import ec, ed25519
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.exceptions import InvalidSignature
 
 
 class DigitalSignatureService:
-    """Provides ECDSA SECP256K1 cryptographic digital signature services."""
+    """Provides ECDSA SECP256K1 and Ed25519 cryptographic digital signature services."""
 
     @staticmethod
     def generate_keypair() -> Tuple[ec.EllipticCurvePrivateKey, str, str]:
@@ -42,41 +42,73 @@ class DigitalSignatureService:
         return private_key, pub_hex, wallet_address
 
     @staticmethod
-    def sign_payload_hash(private_key: ec.EllipticCurvePrivateKey, payload_hash: str) -> str:
+    def generate_ed25519_keypair() -> Tuple[ed25519.Ed25519PrivateKey, str, str]:
         """
-        Create ECDSA digital signature over the payload hash.
-        Returns DER-encoded hex string.
+        Generate a new Ed25519 asymmetric keypair.
+        Returns:
+            (private_key_obj, public_key_hex, wallet_address)
+        """
+        private_key = ed25519.Ed25519PrivateKey.generate()
+        public_key = private_key.public_key()
+        pub_bytes = public_key.public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw
+        )
+        pub_hex = pub_bytes.hex()
+        pub_hash = hashlib.sha256(pub_bytes).hexdigest()
+        wallet_address = "0x" + pub_hash[-40:]
+        return private_key, pub_hex, wallet_address
+
+    @staticmethod
+    def sign_payload_hash(private_key, payload_hash: str) -> str:
+        """
+        Create digital signature over the payload hash (supports SECP256K1 and Ed25519).
+        Returns hex string.
         """
         data_to_sign = payload_hash.encode("utf-8")
-        signature = private_key.sign(data_to_sign, ec.ECDSA(hashes.SHA256()))
-        return signature.hex()
+        if isinstance(private_key, ed25519.Ed25519PrivateKey):
+            return private_key.sign(data_to_sign).hex()
+        else:
+            signature = private_key.sign(data_to_sign, ec.ECDSA(hashes.SHA256()))
+            return signature.hex()
 
     @staticmethod
     def verify_signature(public_key_hex: str, payload_hash: str, signature_hex: str) -> bool:
         """
         Verify that a digital signature is cryptographically valid for the given
-        public key and payload hash.
+        public key and payload hash. Supports both SECP256K1 and Ed25519.
         Returns True if valid, False if altered, corrupt, or invalid.
         """
         if not public_key_hex or not payload_hash or not signature_hex:
             return False
 
         try:
-            # Parse public key from compressed SECP256K1 hex point
             pub_bytes = bytes.fromhex(public_key_hex)
-            public_key = ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256K1(), pub_bytes)
-
-            # Parse signature bytes
             sig_bytes = bytes.fromhex(signature_hex)
             data_to_verify = payload_hash.encode("utf-8")
+        except (ValueError, TypeError):
+            return False
 
-            # Cryptographic verification
-            public_key.verify(sig_bytes, data_to_verify, ec.ECDSA(hashes.SHA256()))
+        # Attempt Ed25519 verification if 32-byte public key (64 hex chars)
+        if len(pub_bytes) == 32 and len(sig_bytes) == 64:
+            try:
+                ed_pub = ed25519.Ed25519PublicKey.from_public_bytes(pub_bytes)
+                ed_pub.verify(sig_bytes, data_to_verify)
+                return True
+            except Exception:
+                pass
+
+        # Attempt ECDSA SECP256K1 verification
+        try:
+            secp_pub = ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256K1(), pub_bytes)
+            secp_pub.verify(sig_bytes, data_to_verify, ec.ECDSA(hashes.SHA256()))
             return True
         except (InvalidSignature, ValueError, TypeError):
-            return False
+            pass
         except Exception:
-            return False
+            pass
+
+        return False
 
 
 # ── In-Memory Secure Key Store ──────────────────────────────────────────────

@@ -5,37 +5,70 @@ import { TamperStatusBanner } from '../../components/TamperStatusBanner';
 import { BlockCard } from '../../components/BlockCard';
 import { BlockchainBlock, ChainSummaryMetrics } from '../../types/blockchain';
 
+import { securechainApi } from '../../services/securechainApi';
+
 export default function AdminDashboard() {
-  const [metrics] = useState<ChainSummaryMetrics>({
-    totalBlocks: 1420,
-    totalTransactions: 8932,
-    pendingTransactions: 6,
+  const [metrics, setMetrics] = useState<ChainSummaryMetrics>({
+    totalBlocks: 0,
+    totalTransactions: 0,
+    pendingTransactions: 0,
     chainIntegrityPercent: 100.0,
     activeNodes: 12,
-    lastBlockHash: '000000a4b7f89c10d3e2187b99c812d45ef61a389c9918237bba8912ef09c123',
+    lastBlockHash: '',
   });
 
-  const [latestBlock] = useState<BlockchainBlock>({
-    height: 1420,
-    hash: '000000a4b7f89c10d3e2187b99c812d45ef61a389c9918237bba8912ef09c123',
-    previousHash: '00000098fbc1278adbc29817fba9812739812bc8192837192837128937129837',
-    merkleRoot: 'd8e8fca9b128741b29a81c90184b8109d98bc19a8274bca8192837bc90182741',
+  const [latestBlock, setLatestBlock] = useState<BlockchainBlock>({
+    height: 0,
+    hash: '',
+    previousHash: '',
+    merkleRoot: '',
     timestamp: new Date().toISOString(),
-    nonce: 89124,
-    difficulty: 4,
+    nonce: 0,
+    difficulty: 2,
     transactions: [],
-    transactionCount: 8,
+    transactionCount: 0,
     status: 'VERIFIED',
     validatorAddress: '0xNode1_Validator_Consensus',
   });
 
   const [isMining, setIsMining] = useState(false);
 
+  React.useEffect(() => {
+    async function loadAdminData() {
+      try {
+        const [stats, act] = await Promise.all([
+          securechainApi.getStats(),
+          securechainApi.getActivity(),
+        ]);
+        const blkHeight = stats.latest_block || 0;
+        const totalBlks = stats.total_blocks || (blkHeight + 1);
+        setMetrics({
+          totalBlocks: totalBlks,
+          totalTransactions: stats.total_transactions || 0,
+          pendingTransactions: stats.pending_transactions || 0,
+          chainIntegrityPercent: 100.0,
+          activeNodes: stats.active_validators || 12,
+          lastBlockHash: act.latest_block_hash || '',
+        });
+        setLatestBlock(prev => ({
+          ...prev,
+          height: blkHeight,
+          hash: act.latest_block_hash || '',
+          timestamp: act.latest_transaction?.timestamp || new Date().toISOString(),
+          status: 'VERIFIED',
+        }));
+      } catch (err) {
+        console.warn('Could not load admin stats:', err);
+      }
+    }
+    loadAdminData();
+  }, []);
+
   const handleMineBlock = () => {
     setIsMining(true);
     setTimeout(() => {
       setIsMining(false);
-      alert('Block #1421 successfully mined and committed to the chain!');
+      alert(`Block #${(latestBlock.height || 0) + 1} successfully mined and committed to the chain!`);
     }, 1200);
   };
 

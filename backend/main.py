@@ -85,6 +85,14 @@ app.include_router(dashboard.router,      prefix="/api/dashboard",      tags=["d
 app.include_router(fraud.router,          prefix="/api/fraud",          tags=["fraud"])
 app.include_router(blockchain.router,     prefix="/api/blockchain",     tags=["blockchain"])
 
+# ── SecureChain API Routes ─────────────────────────────────────────────────────
+try:
+    from securechain.routes import router as securechain_router
+    app.include_router(securechain_router, prefix="/api/securechain",    tags=["securechain"])
+    app.include_router(securechain_router, prefix="/api/v1/securechain", tags=["securechain-v1"])
+except Exception as _e:
+    print(f"[Main] Error loading SecureChain routes: {_e}")
+
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 

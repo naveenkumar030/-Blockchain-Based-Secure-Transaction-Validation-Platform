@@ -1,53 +1,49 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Search, Filter } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Search, Filter, RefreshCw, Box } from 'lucide-react';
 import { BlockCard } from '../../components/BlockCard';
 import { MerkleTreeViewer } from '../../components/MerkleTreeViewer';
 import { BlockchainBlock } from '../../types/blockchain';
+import { securechainApi } from '../../services/securechainApi';
 
 export default function BlockLedger() {
   const [selectedBlock, setSelectedBlock] = useState<BlockchainBlock | null>(null);
+  const [blocks, setBlocks] = useState<BlockchainBlock[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [blocks] = useState<BlockchainBlock[]>([
-    {
-      height: 1420,
-      hash: '000000a4b7f89c10d3e2187b99c812d45ef61a389c9918237bba8912ef09c123',
-      previousHash: '00000098fbc1278adbc29817fba9812739812bc8192837192837128937129837',
-      merkleRoot: 'd8e8fca9b128741b29a81c90184b8109d98bc19a8274bca8192837bc90182741',
-      timestamp: new Date().toISOString(),
-      nonce: 89124,
-      difficulty: 4,
-      transactions: [],
-      transactionCount: 8,
-      status: 'VERIFIED',
-      validatorAddress: '0xNode1_Validator_Consensus',
-    },
-    {
-      height: 1419,
-      hash: '00000098fbc1278adbc29817fba9812739812bc8192837192837128937129837',
-      previousHash: '00000037189283bc910283749102837491028374910283749102837491028374',
-      merkleRoot: 'c90182741b9918273b481928374b8109d98bc19a8274bca8192837bc90182741',
-      timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
-      nonce: 43210,
-      difficulty: 4,
-      transactions: [],
-      transactionCount: 14,
-      status: 'VERIFIED',
-      validatorAddress: '0xNode2_Validator_Consensus',
-    },
-    {
-      height: 1418,
-      hash: '00000037189283bc910283749102837491028374910283749102837491028374',
-      previousHash: '0000001928374910283749102837491028374910283749102837491028374910',
-      merkleRoot: 'a8192837bc90182741d8e8fca9b128741b29a81c90184b8109d98bc19a8274bc',
-      timestamp: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
-      nonce: 65123,
-      difficulty: 4,
-      transactions: [],
-      transactionCount: 5,
-      status: 'VERIFIED',
-      validatorAddress: '0xNode1_Validator_Consensus',
-    },
-  ]);
+  const fetchBlocks = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await securechainApi.ensureAuth();
+      const res = await securechainApi.getBlocks(1, 30);
+      if (res && res.blocks && res.blocks.length > 0) {
+        const mappedBlocks: BlockchainBlock[] = res.blocks.map((b: any) => ({
+          height: b.height ?? b.block_number ?? 0,
+          hash: b.hash ?? b.block_hash ?? '',
+          previousHash: b.previous_hash ?? b.previousHash ?? '0'.repeat(64),
+          merkleRoot: b.merkle_root ?? b.merkleRoot ?? '',
+          timestamp: b.timestamp || new Date().toISOString(),
+          nonce: b.nonce ?? 0,
+          difficulty: b.difficulty ?? 2,
+          transactions: b.transactions || [],
+          transactionCount: b.transaction_count ?? (b.transactions ? b.transactions.length : 0),
+          status: b.status || 'VERIFIED',
+          validatorAddress: b.validator_address ?? b.validatorAddress ?? '0xConsensus_Validator_Alpha',
+        }));
+        setBlocks(mappedBlocks);
+      }
+    } catch (err: any) {
+      console.error('Failed to fetch ledger blocks:', err);
+      setError(err?.message || 'Failed to load live ledger sequence');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlocks();
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
@@ -63,6 +59,15 @@ export default function BlockLedger() {
             </p>
           </div>
         </div>
+
+        <button
+          onClick={fetchBlocks}
+          disabled={loading}
+          className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E8E6DC] hover:border-[#D97757] hover:text-[#D97757] text-[#141413] rounded-lg text-xs font-semibold transition-colors shadow-xs"
+        >
+          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          {loading ? 'Refreshing...' : 'Refresh Blocks'}
+        </button>
       </div>
 
       {selectedBlock && (
@@ -79,23 +84,40 @@ export default function BlockLedger() {
           <MerkleTreeViewer
             blockHeight={selectedBlock.height}
             merkleRoot={selectedBlock.merkleRoot}
-            leafHashes={[
-              'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-              '4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a',
-              '7a12b45129fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b999',
-            ]}
+            leafHashes={
+              selectedBlock.transactions && selectedBlock.transactions.length > 0
+                ? selectedBlock.transactions.map((t: any) => t.payload_hash || t.payloadHash || t.tx_id || t.id)
+                : [selectedBlock.merkleRoot]
+            }
           />
         </div>
       )}
 
       {/* Block List */}
       <div className="space-y-4">
-        <h2 className="text-xs font-bold text-[#141413] uppercase tracking-wider">Blockchain Ledger Sequence</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {blocks.map((b) => (
-            <BlockCard key={b.height} block={b} onSelect={setSelectedBlock} />
-          ))}
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-bold text-[#141413] uppercase tracking-wider">
+            Blockchain Ledger Sequence ({blocks.length} Confirmed Blocks)
+          </h2>
         </div>
+
+        {loading && blocks.length === 0 ? (
+          <div className="py-12 text-center bg-white border border-[#E8E6DC] rounded-xl">
+            <RefreshCw size={24} className="mx-auto text-[#D97757] animate-spin mb-2" />
+            <p className="text-xs text-[#5C5A55]">Retrieving live blocks from cryptographic ledger...</p>
+          </div>
+        ) : blocks.length === 0 ? (
+          <div className="py-12 text-center bg-white border border-[#E8E6DC] rounded-xl">
+            <Box size={28} className="mx-auto text-[#8C8980] mb-2" />
+            <p className="text-xs text-[#5C5A55]">No mined blocks currently available in ledger.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {blocks.map((b) => (
+              <BlockCard key={b.height} block={b} onSelect={setSelectedBlock} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

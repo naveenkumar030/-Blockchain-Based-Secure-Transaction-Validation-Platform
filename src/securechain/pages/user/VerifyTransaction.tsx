@@ -42,7 +42,7 @@ export default function VerifyTransaction() {
           payloadHash: report.transaction?.payload_hash || 'SHA256-HASH',
           computedHash: report.transaction?.payload_hash || 'SHA256-HASH',
           signatureValid: Boolean(report.checks?.digital_signature_verification),
-          blockHeight: report.transaction?.block_number || 1420,
+          blockHeight: report.transaction?.block_number ?? report.details?.block_number ?? 0,
           details: report.message || (report.verified ? 'Cryptographic SHA-256 hash strictly matches recorded on-chain ledger.' : 'INTEGRITY CHECK FAILED'),
         });
       }

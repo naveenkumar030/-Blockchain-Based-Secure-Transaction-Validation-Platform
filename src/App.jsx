@@ -29,6 +29,8 @@ function App() {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/blockchain/dashboard" element={<BlockchainUserDashboard />} />
+      <Route path="/blockchain/profile" element={<BlockchainUserDashboard initialNav="Profile" />} />
+      <Route path="/blockchain/settings" element={<BlockchainUserDashboard initialNav="Settings" />} />
       <Route path="/blockchain/transactions/create" element={<CreateTransactionPage />} />
       <Route path="/blockchain/verify" element={<VerifyTransactionPage />} />
       <Route path="/dashboard" element={<Layout />}>

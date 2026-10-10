@@ -36,8 +36,10 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { securechainApi } from '../services/securechainApi';
+import Profile from '../../pages/Profile';
+import SettingsPage from '../../pages/Settings';
 
-export default function BlockchainUserDashboard() {
+export default function BlockchainUserDashboard({ initialNav = 'Dashboard' }) {
   const navigate = useNavigate();
 
   // ── User Identity ──
@@ -69,7 +71,7 @@ export default function BlockchainUserDashboard() {
 
   // ── Layout & Drawer States ──
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [activeNav, setActiveNav] = useState('Dashboard');
+  const [activeNav, setActiveNav] = useState(initialNav);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [copiedHash, setCopiedHash] = useState(null);
@@ -81,7 +83,7 @@ export default function BlockchainUserDashboard() {
     valid_transactions: 0,
     pending_transactions: 0,
     rejected_transactions: 0,
-    latest_block: 1420,
+    latest_block: 0,
     active_validators: 12,
     integrity_status: 'HEALTHY',
     network: 'SecureChain Mainnet Alpha'
@@ -92,8 +94,8 @@ export default function BlockchainUserDashboard() {
   const [activityData, setActivityData] = useState({
     confirmed_transactions: 0,
     total_transactions: 0,
-    latest_block: 1420,
-    latest_block_hash: '0x4a82ec49175dbe2a4a761a9bc3860bb43c9769399e0ff927233c70f3f38d3811',
+    latest_block: 0,
+    latest_block_hash: '',
     latest_transaction: null,
     validator_nodes: 12,
     consensus_status: 'ACTIVE',
@@ -237,7 +239,7 @@ export default function BlockchainUserDashboard() {
         setGlobalBanner({
           type: 'success',
           title: 'Transaction Confirmed & Mined!',
-          message: `Transaction ${res.transaction.transaction_id} was validated and sealed into Block #${res.transaction.block_number || res.block?.height || 1420}.`,
+          message: `Transaction ${res.transaction.transaction_id} was validated and sealed into Block #${res.transaction.block_number ?? res.transaction.block_height ?? res.block?.height ?? statsData.latest_block}.`,
         });
         // Refresh dashboard data
         loadDashboardData();
@@ -313,6 +315,14 @@ export default function BlockchainUserDashboard() {
     }
     if (name === 'Verify Transaction') {
       navigate('/blockchain/verify');
+      return;
+    }
+    if (name === 'My Transactions') {
+      setActiveNav('Dashboard');
+      setTimeout(() => {
+        const el = document.getElementById('recent-transactions-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
       return;
     }
     if (name === 'Notifications') setNotificationsOpen(true);
@@ -435,9 +445,17 @@ export default function BlockchainUserDashboard() {
               <Menu size={20} />
             </button>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-[#8C8980] uppercase tracking-wider hidden sm:inline">SecureChain</span>
+              <button
+                onClick={() => setActiveNav('Dashboard')}
+                className="text-xs font-bold text-[#8C8980] hover:text-[#141413] uppercase tracking-wider hidden sm:inline transition-colors cursor-pointer"
+                title="Return to Dashboard"
+              >
+                SecureChain
+              </button>
               <span className="text-[#D5D2C7] hidden sm:inline">/</span>
-              <span className="text-xs font-bold text-[#D97757] uppercase tracking-wider">User Dashboard</span>
+              <span className="text-xs font-bold text-[#D97757] uppercase tracking-wider">
+                {activeNav === 'Dashboard' ? 'User Dashboard' : activeNav}
+              </span>
             </div>
           </div>
 
@@ -553,6 +571,24 @@ export default function BlockchainUserDashboard() {
                   >
                     <CheckCircle2 size={14} className="text-[#2E7D32]" /> Verify Transaction
                   </button>
+                  <button
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      handleNavClick('Profile');
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-[#595856] hover:text-[#141413] hover:bg-[#FAF9F5] transition-colors text-left"
+                  >
+                    <User size={14} className="text-[#D97757]" /> My Profile & Node Identity
+                  </button>
+                  <button
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      handleNavClick('Settings');
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-[#595856] hover:text-[#141413] hover:bg-[#FAF9F5] transition-colors text-left"
+                  >
+                    <Settings size={14} className="text-[#D97757]" /> Platform Settings
+                  </button>
                   <div className="border-t border-[#E8E6DC] my-1"></div>
                   <button
                     onClick={() => {
@@ -602,10 +638,39 @@ export default function BlockchainUserDashboard() {
             </div>
           )}
 
-          {/* ─────────────────────────────────────────────────────────── */}
-          {/* WELCOME SECTION                                             */}
-          {/* ─────────────────────────────────────────────────────────── */}
-          <section className="bg-white border border-[#E8E6DC] rounded-2xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
+          {/* Dynamic Content: Profile | Settings | Dashboard */}
+          {activeNav === 'Profile' ? (
+            <div className="animate-fade-in space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-[#E8E6DC]">
+                <button
+                  onClick={() => setActiveNav('Dashboard')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#595856] hover:text-[#141413] bg-white border border-[#E8E6DC] hover:bg-[#F5F3ED] transition-colors shadow-2xs"
+                >
+                  ← Back to Dashboard
+                </button>
+                <span className="text-xs text-[#8C8980]">User Profile & Cryptographic Node Identity</span>
+              </div>
+              <Profile />
+            </div>
+          ) : activeNav === 'Settings' ? (
+            <div className="animate-fade-in space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-[#E8E6DC]">
+                <button
+                  onClick={() => setActiveNav('Dashboard')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#595856] hover:text-[#141413] bg-white border border-[#E8E6DC] hover:bg-[#F5F3ED] transition-colors shadow-2xs"
+                >
+                  ← Back to Dashboard
+                </button>
+                <span className="text-xs text-[#8C8980]">Enterprise Platform & Ledger Settings</span>
+              </div>
+              <SettingsPage />
+            </div>
+          ) : (
+            <>
+              {/* ─────────────────────────────────────────────────────────── */}
+              {/* WELCOME SECTION                                             */}
+              {/* ─────────────────────────────────────────────────────────── */}
+              <section className="bg-white border border-[#E8E6DC] rounded-2xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
             <div className="absolute right-0 top-0 w-96 h-full bg-gradient-to-l from-[#FDF4F0] via-transparent to-transparent pointer-events-none"></div>
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
@@ -959,10 +1024,10 @@ export default function BlockchainUserDashboard() {
                   </span>
                   <div className="text-right">
                     <span className="font-mono font-bold text-[#141413] text-sm">
-                      {activityData.latest_transaction?.transaction_id || 'TX-GENESIS-SC'}
+                      {activityData.latest_transaction?.transaction_id || (activityLoading ? '...' : 'None')}
                     </span>
                     <span className="block text-[10px] text-[#8C8980]">
-                      {activityData.latest_transaction?.amount ? `${activityData.latest_transaction.amount} SC · Validated` : 'Genesis State'}
+                      {activityData.latest_transaction?.amount ? `${activityData.latest_transaction.amount} SC · Validated` : 'No Recent Activity'}
                     </span>
                   </div>
                 </div>
@@ -973,23 +1038,25 @@ export default function BlockchainUserDashboard() {
                     <span className="text-[#595856] font-medium flex items-center gap-2">
                       <Hash size={16} className="text-[#D97757]" /> Latest Block Hash
                     </span>
-                    <button
-                      onClick={() => handleCopy(activityData.latest_block_hash, 'latest-block-hash')}
-                      className="text-[11px] text-[#D97757] hover:text-[#C66545] flex items-center gap-1 font-semibold"
-                    >
-                      {copiedHash === 'latest-block-hash' ? (
-                        <>
-                          <Check size={12} className="text-[#2E7D32]" /> Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={12} /> Copy Full Hash
-                        </>
-                      )}
-                    </button>
+                    {activityData.latest_block_hash && (
+                      <button
+                        onClick={() => handleCopy(activityData.latest_block_hash, 'latest-block-hash')}
+                        className="text-[11px] text-[#D97757] hover:text-[#C66545] flex items-center gap-1 font-semibold"
+                      >
+                        {copiedHash === 'latest-block-hash' ? (
+                          <>
+                            <Check size={12} className="text-[#2E7D32]" /> Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={12} /> Copy Full Hash
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                   <div className="bg-white px-3 py-2 rounded-lg font-mono text-[11px] text-[#141413] break-all border border-[#E8E6DC] select-all">
-                    {activityData.latest_block_hash || '0x4a82ec49175dbe2a4a761a9bc3860bb43c9769399e0ff927233c70f3f38d3811'}
+                    {activityData.latest_block_hash || (activityLoading ? '...' : 'Awaiting Next Mined Block')}
                   </div>
                 </div>
               </div>
@@ -1182,7 +1249,9 @@ export default function BlockchainUserDashboard() {
               </div>
             )}
           </section>
-        </main>
+        </>
+      )}
+    </main>
       </div>
 
       {/* ───────────────────────────────────────────────────────────── */}

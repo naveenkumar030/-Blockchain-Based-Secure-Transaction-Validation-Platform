@@ -84,6 +84,7 @@ class Neo4jGraphService:
                 auth=auth,
                 encrypted=True,
                 trusted_certificates=TrustCustomCAs(certifi.where()),
+                connection_timeout=2.0,
                 max_connection_lifetime=300,
                 max_connection_pool_size=50,
             )
@@ -96,7 +97,7 @@ class Neo4jGraphService:
 
         # 2. Secondary: direct standard URI
         try:
-            d = GraphDatabase.driver(self.uri, auth=auth)
+            d = GraphDatabase.driver(self.uri, auth=auth, connection_timeout=2.0)
             d.verify_connectivity()
             self._driver = d
             logger.info("[SecureChain Neo4j] Connected via standard driver.")
@@ -107,7 +108,7 @@ class Neo4jGraphService:
         # 3. Tertiary: self-signed cert / fallback URI
         try:
             ssc_uri = self.uri.replace("neo4j+s://", "neo4j+ssc://").replace("bolt+s://", "bolt+ssc://")
-            d = GraphDatabase.driver(ssc_uri, auth=auth)
+            d = GraphDatabase.driver(ssc_uri, auth=auth, connection_timeout=2.0)
             d.verify_connectivity()
             self._driver = d
             logger.info("[SecureChain Neo4j] Connected via +ssc fallback.")
@@ -326,6 +327,20 @@ class Neo4jGraphService:
             t.status = $status
 
         MERGE (u)-[:CREATED]->(t)
+        MERGE (u)-[:SENT]->(t)
+
+        WITH t
+        // Link or create recipient user node with [:RECEIVED_BY]
+        OPTIONAL MATCH (existing_recv:User)
+        WHERE (existing_recv.email = $receiver OR existing_recv.address = $receiver)
+        FOREACH (_ IN CASE WHEN existing_recv IS NOT NULL THEN [1] ELSE [] END |
+            MERGE (t)-[:RECEIVED_BY]->(existing_recv)
+        )
+        FOREACH (_ IN CASE WHEN existing_recv IS NULL AND $receiver <> "" THEN [1] ELSE [] END |
+            MERGE (ru:User {email: $receiver})
+            ON CREATE SET ru.address = $receiver
+            MERGE (t)-[:RECEIVED_BY]->(ru)
+        )
 
         WITH t
         OPTIONAL MATCH (b:Block {block_number: $block_number})

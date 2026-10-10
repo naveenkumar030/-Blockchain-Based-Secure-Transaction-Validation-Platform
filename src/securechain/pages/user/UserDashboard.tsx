@@ -9,12 +9,12 @@ import { securechainApi } from '../../services/securechainApi';
 
 export default function UserDashboard() {
   const [metrics, setMetrics] = useState<ChainSummaryMetrics>({
-    totalBlocks: 1420,
+    totalBlocks: 0,
     totalTransactions: 0,
     pendingTransactions: 0,
     chainIntegrityPercent: 100.0,
     activeNodes: 12,
-    lastBlockHash: '000000a4b7f89c10d3e2187b99c812d45ef61a389c9918237bba8912ef09c123',
+    lastBlockHash: '',
   });
   const [recentTransactions, setRecentTransactions] = useState<BlockchainTransaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,12 +31,12 @@ export default function UserDashboard() {
         ]);
         if (stats) {
           setMetrics({
-            totalBlocks: stats.total_blocks || 1420,
+            totalBlocks: stats.total_blocks || (stats.latest_block != null ? stats.latest_block + 1 : 0),
             totalTransactions: stats.total_transactions || 0,
             pendingTransactions: stats.pending_transactions || 0,
-            chainIntegrityPercent: stats.chain_integrity_percent || 100.0,
-            activeNodes: stats.active_nodes || 12,
-            lastBlockHash: stats.latest_block_hash || '000000a4b7f89c10d3e2187b99c812d45ef61a389c9918237bba8912ef09c123',
+            chainIntegrityPercent: 100.0,
+            activeNodes: stats.active_validators || 12,
+            lastBlockHash: stats.latest_block_hash || '',
           });
         }
         if (txs && txs.transactions) {

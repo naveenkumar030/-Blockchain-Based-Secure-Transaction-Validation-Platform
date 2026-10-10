@@ -34,16 +34,23 @@ router = APIRouter()
 # ── Route 0: POST /api/blockchain/auth/demo-token ────────────────────────────
 
 @router.post("/auth/demo-token")
-async def get_demo_token():
-    """Generates an authenticated session token for SecureChain demo exploration."""
+async def get_demo_token(request: Request):
+    """Generates an authenticated session token for SecureChain demo exploration or session refresh."""
     email = "alex.mercer@securechain.io"
+    try:
+        body = await request.json()
+        if isinstance(body, dict) and body.get("email"):
+            email = str(body["email"]).strip()
+    except Exception:
+        pass
     await ensure_user_seeded(email)
     token = create_access_token({"sub": email})
+    name_part = email.split("@")[0].replace(".", " ").title()
     return {
         "success": True,
         "token": token,
         "user_email": email,
-        "user_name": "Alex Mercer"
+        "user_name": name_part
     }
 
 
@@ -128,7 +135,7 @@ async def submit_transaction(req: TransactionCreateInput, request: Request):
             "success": False,
             "message": result_meta.get("message", "INTEGRITY CHECK FAILED"),
             "error": result_meta.get("error"),
-            "transaction": tx.to_dict(),
+            "transaction": tx.to_dict() if tx else None,
             "validation": result_meta
         }
 
@@ -330,4 +337,32 @@ async def get_blockchain_graph_status(request: Request):
     return {
         "success": conn_status.get("connected", False),
         **conn_status
+    }
+
+
+# ── Route 10: GET /api/blockchain/blocks ─────────────────────────────────────
+
+@router.get("/blocks")
+async def get_blockchain_blocks_endpoint(
+    request: Request,
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100)
+):
+    """
+    Retrieve real mined blocks from the active SecureChain blockchain ledger.
+    """
+    get_user_email(request)
+    chain = await engine.chain_manager.get_chain(limit=500)
+    # Sort descending by block height (newest blocks first)
+    chain_sorted = sorted(chain, key=lambda b: b.height, reverse=True)
+    total = len(chain_sorted)
+    skip = (page - 1) * limit
+    page_blocks = chain_sorted[skip : skip + limit]
+
+    return {
+        "success": True,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "blocks": [b.to_dict() for b in page_blocks]
     }

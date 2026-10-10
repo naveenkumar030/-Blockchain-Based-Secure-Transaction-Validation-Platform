@@ -19,6 +19,8 @@ import Profile from './pages/Profile';
 import BlockchainUserDashboard from './securechain/pages/BlockchainUserDashboard';
 import CreateTransactionPage from './securechain/pages/CreateTransactionPage';
 import VerifyTransactionPage from './securechain/pages/VerifyTransactionPage';
+import BlockchainGraphPage from './securechain/pages/BlockchainGraphPage';
+import BlockLedger from './securechain/pages/admin/BlockLedger';
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
       <Route path="/blockchain/settings" element={<BlockchainUserDashboard initialNav="Settings" />} />
       <Route path="/blockchain/transactions/create" element={<CreateTransactionPage />} />
       <Route path="/blockchain/verify" element={<VerifyTransactionPage />} />
+      <Route path="/blockchain/graph" element={<BlockchainGraphPage />} />
+      <Route path="/blockchain/blocks" element={<BlockLedger />} />
       <Route path="/dashboard" element={<Layout />}>
         <Route index element={<Overview />} />
         <Route path="upload" element={<Upload />} />

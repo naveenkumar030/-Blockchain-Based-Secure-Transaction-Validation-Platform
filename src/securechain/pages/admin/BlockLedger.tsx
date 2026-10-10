@@ -13,7 +13,8 @@ import {
   Key,
   CheckCircle,
   AlertTriangle,
-  FileText
+  FileText,
+  Share2
 } from 'lucide-react';
 import { BlockCard } from '../../components/BlockCard';
 import { MerkleTreeViewer } from '../../components/MerkleTreeViewer';
@@ -149,6 +150,14 @@ export default function BlockLedger() {
         </div>
 
         <div className="flex items-center gap-2">
+          <a
+            href="/blockchain/graph"
+            className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E8E6DC] hover:border-[#2563EB] hover:text-[#2563EB] text-[#141413] rounded-lg text-xs font-semibold transition-colors shadow-xs"
+          >
+            <Share2 size={14} className="text-[#2563EB]" />
+            Neo4j Topology
+          </a>
+
           <button
             onClick={handleVerifyChain}
             disabled={isVerifying}

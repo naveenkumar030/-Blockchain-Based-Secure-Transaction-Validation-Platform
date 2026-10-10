@@ -22,15 +22,23 @@ export interface BlockchainTransaction {
 }
 
 export interface BlockchainBlock {
+  index?: number;
   height: number;
+  block_id?: string;
+  blockId?: string;
   hash: string;
+  block_hash?: string;
+  blockHash?: string;
   previousHash: string;
+  previous_hash?: string;
   merkleRoot: string;
-  timestamp: string;
+  merkle_root?: string;
+  timestamp: string | number;
   nonce: number;
   difficulty: number;
-  transactions: BlockchainTransaction[];
+  transactions: any[];
   transactionCount: number;
+  transaction_count?: number;
   status: BlockStatus;
   validatorAddress: string;
 }

@@ -201,28 +201,33 @@ class Neo4jGraphService:
         else:
             b_dict = block
 
-        block_number = int(b_dict.get("height") if b_dict.get("height") is not None else b_dict.get("block_number", 0))
+        block_number = int(b_dict.get("index") if b_dict.get("index") is not None else b_dict.get("height", b_dict.get("block_number", 0)))
+        block_id = b_dict.get("block_id") or f"BLOCK-{block_number:03d}"
         timestamp = b_dict.get("timestamp") or datetime.now(timezone.utc).isoformat()
-        previous_hash = b_dict.get("previous_hash") or ("0" * 64)
-        block_hash = b_dict.get("hash") or b_dict.get("block_hash") or ""
+        previous_hash = b_dict.get("previous_hash") or ("GENESIS" if block_number == 0 else "")
+        block_hash = b_dict.get("block_hash") or b_dict.get("hash") or ""
+        tx_count = int(b_dict.get("transaction_count", len(b_dict.get("transactions", []))))
 
         query = """
         MERGE (b:Block {block_number: $block_number})
-        SET b.timestamp = $timestamp,
+        SET b.index = $block_number,
+            b.block_id = $block_id,
+            b.timestamp = $timestamp,
             b.previous_hash = $previous_hash,
-            b.block_hash = $block_hash
+            b.block_hash = $block_hash,
+            b.transaction_count = $transaction_count
         WITH b
         // Link to previous block (by block_number - 1 or previous_hash)
         OPTIONAL MATCH (prev:Block)
-        WHERE (prev.block_number = $block_number - 1)
-           OR (prev.block_hash = $previous_hash AND $previous_hash <> "0000000000000000000000000000000000000000000000000000000000000000")
+        WHERE (prev.block_number = $block_number - 1 OR prev.index = $block_number - 1)
+           OR (prev.block_hash = $previous_hash AND $previous_hash <> "GENESIS" AND $previous_hash <> "0000000000000000000000000000000000000000000000000000000000000000")
         FOREACH (_ IN CASE WHEN prev IS NOT NULL THEN [1] ELSE [] END |
             MERGE (b)-[:PREVIOUS_BLOCK]->(prev)
         )
         WITH b
         // Link any next block that was ingested earlier
         OPTIONAL MATCH (nxt:Block)
-        WHERE (nxt.block_number = $block_number + 1)
+        WHERE (nxt.block_number = $block_number + 1 OR nxt.index = $block_number + 1)
            OR (nxt.previous_hash = $block_hash AND $block_hash <> "")
         FOREACH (_ IN CASE WHEN nxt IS NOT NULL THEN [1] ELSE [] END |
             MERGE (nxt)-[:PREVIOUS_BLOCK]->(b)
@@ -232,9 +237,11 @@ class Neo4jGraphService:
 
         params = {
             "block_number": block_number,
+            "block_id": block_id,
             "timestamp": timestamp,
             "previous_hash": previous_hash,
             "block_hash": block_hash,
+            "transaction_count": tx_count,
         }
 
         try:

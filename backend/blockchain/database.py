@@ -435,12 +435,14 @@ async def is_receiver_eligible(receiver_id: str, sender_id: str) -> tuple[bool, 
 
 async def is_transaction_duplicate(tx_id: str) -> bool:
     """Check if transaction ID already exists in the ledger."""
+    load_local_cache()
     existing = await get_transaction_by_id(tx_id)
     return existing is not None
 
 
 async def check_nonce_available(user_email: str, nonce: int) -> bool:
     """Return True if nonce is unused for user, False if replayed."""
+    load_local_cache()
     if (await is_mongo_alive()) and bc_transactions_col is not None:
         try:
             existing = await asyncio.wait_for(

@@ -471,14 +471,91 @@ export const securechainApi = {
    * GET /api/blockchain/blocks
    * Retrieves real paginated blocks from the blockchain ledger.
    */
-  getBlocks: async (page = 1, limit = 20): Promise<{
+  getBlocks: async (page = 1, limit = 20, order = 'asc'): Promise<{
     success: boolean;
     total: number;
     page: number;
     limit: number;
     blocks: any[];
   }> => {
-    return blockchainFetch(`/blocks?page=${page}&limit=${limit}`);
+    return blockchainFetch(`/blocks?page=${page}&limit=${limit}&order=${order}`);
+  },
+
+  /**
+   * GET /api/securechain/blocks/{block_id}
+   * Retrieves single block with full complete transaction payloads.
+   */
+  getBlockById: async (blockId: string): Promise<{ success: boolean; block: any }> => {
+    let token = localStorage.getItem('token');
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${BASE_URL}/api/securechain/blocks/${blockId}`, { headers });
+    if (!res.ok) {
+      throw new BlockchainApiError(`Block not found: ${blockId}`, res.status);
+    }
+    return res.json();
+  },
+
+  /**
+   * POST /api/securechain/blocks/create
+   * Creates a new block linked to the chain tip containing complete transaction payloads.
+   */
+  createBlock: async (data: { transaction_ids?: string[]; max_transactions?: number } = {}): Promise<{
+    success: boolean;
+    message: string;
+    index: number;
+    block_id: string;
+    block_hash: string;
+    previous_hash: string;
+    transaction_count: number;
+    timestamp: number;
+    block: any;
+  }> => {
+    let token = localStorage.getItem('token');
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${BASE_URL}/api/securechain/blocks/create`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new BlockchainApiError(err.detail || err.message || 'Block creation failed', res.status);
+    }
+    return res.json();
+  },
+
+  /**
+   * POST /api/securechain/blocks/verify-chain
+   * Audits and mathematically verifies the entire blockchain ledger sequence.
+   */
+  verifyChain: async (): Promise<{
+    success: boolean;
+    is_valid: boolean;
+    total_blocks: number;
+    verified_blocks: number;
+    first_invalid_block: number | null;
+    error_reason: string | null;
+    corrupted_block_indices: number[];
+    message: string;
+    audit_report: any;
+  }> => {
+    let token = localStorage.getItem('token');
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${BASE_URL}/api/securechain/blocks/verify-chain`, {
+      method: 'POST',
+      headers,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new BlockchainApiError(err.detail || err.message || 'Chain verification failed', res.status);
+    }
+    return res.json();
   },
 
   /**

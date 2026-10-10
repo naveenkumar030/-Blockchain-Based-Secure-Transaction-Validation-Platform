@@ -346,15 +346,18 @@ async def get_blockchain_graph_status(request: Request):
 async def get_blockchain_blocks_endpoint(
     request: Request,
     page: int = Query(1, ge=1),
-    limit: int = Query(20, ge=1, le=100)
+    limit: int = Query(20, ge=1, le=100),
+    order: str = Query("asc", description="'asc' for chain index order or 'desc' for newest first")
 ):
     """
-    Retrieve real mined blocks from the active SecureChain blockchain ledger.
+    Retrieve real confirmed blocks from the active SecureChain blockchain ledger.
     """
     get_user_email(request)
-    chain = await engine.chain_manager.get_chain(limit=500)
-    # Sort descending by block height (newest blocks first)
-    chain_sorted = sorted(chain, key=lambda b: b.height, reverse=True)
+    chain = await engine.chain_manager.get_chain(limit=1000)
+    if order.lower() == "desc":
+        chain_sorted = sorted(chain, key=lambda b: b.index, reverse=True)
+    else:
+        chain_sorted = sorted(chain, key=lambda b: b.index)
     total = len(chain_sorted)
     skip = (page - 1) * limit
     page_blocks = chain_sorted[skip : skip + limit]
@@ -366,3 +369,48 @@ async def get_blockchain_blocks_endpoint(
         "limit": limit,
         "blocks": [b.to_dict() for b in page_blocks]
     }
+
+
+# ── Route 11: GET /api/blockchain/blocks/{block_id} ──────────────────────────
+
+@router.get("/blocks/{block_id}")
+async def get_blockchain_block_by_id_endpoint(block_id: str, request: Request):
+    """
+    Retrieve single block and its complete transaction payloads by block_id or index.
+    """
+    get_user_email(request)
+    block = await engine.chain_manager.get_block_by_id(block_id)
+    if not block:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Block '{block_id}' not found in blockchain ledger."
+        )
+    return {
+        "success": True,
+        "block": block.to_dict()
+    }
+
+
+# ── Route 12: POST /api/blockchain/blocks/verify-chain ───────────────────────
+
+@router.post("/blocks/verify-chain")
+async def verify_blockchain_chain_endpoint(request: Request):
+    """
+    Audit and mathematically verify the entire blockchain ledger sequence.
+    """
+    get_user_email(request)
+    from securechain.validation.chain_validator import ChainValidator
+    chain = await engine.chain_manager.get_chain(limit=2000)
+    is_valid, first_invalid_block, summary_message, audit_report = ChainValidator.validate_chain_integrity(chain)
+    return {
+        "success": True,
+        "is_valid": is_valid,
+        "total_blocks": audit_report["total_blocks_checked"],
+        "verified_blocks": audit_report["verified_blocks"],
+        "first_invalid_block": first_invalid_block,
+        "error_reason": audit_report["error_reason"],
+        "corrupted_block_indices": audit_report["corrupted_block_indices"],
+        "message": summary_message,
+        "audit_report": audit_report
+    }
+

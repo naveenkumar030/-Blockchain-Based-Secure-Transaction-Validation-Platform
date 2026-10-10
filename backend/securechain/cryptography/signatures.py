@@ -72,6 +72,8 @@ class DigitalSignatureService:
             signature = private_key.sign(data_to_sign, ec.ECDSA(hashes.SHA256()))
             return signature.hex()
 
+    sign_payload = sign_payload_hash
+
     @staticmethod
     def verify_signature(public_key_hex: str, payload_hash: str, signature_hex: str) -> bool:
         """

@@ -27,9 +27,22 @@ export default function Login() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      navigate('/blockchain/dashboard');
-    }
+    if (!token) return;
+    // Validate token is still live before redirecting
+    fetch('/api/blockchain/stats', {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => {
+      if (res.ok) {
+        navigate('/blockchain/dashboard');
+      } else {
+        // Token expired or invalid — clear it so the form shows
+        localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userEmail');
+      }
+    }).catch(() => {
+      // Network error — stay on login page
+    });
   }, [navigate]);
 
   const handleLogin = async (e) => {

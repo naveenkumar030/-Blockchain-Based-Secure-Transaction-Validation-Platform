@@ -21,6 +21,9 @@ import CreateTransactionPage from './securechain/pages/CreateTransactionPage';
 import VerifyTransactionPage from './securechain/pages/VerifyTransactionPage';
 import BlockchainGraphPage from './securechain/pages/BlockchainGraphPage';
 import BlockLedger from './securechain/pages/admin/BlockLedger';
+import AdminDashboard from './securechain/pages/admin/AdminDashboard';
+import ChainIntegrityAudit from './securechain/pages/admin/ChainIntegrityAudit';
+import NodeManagement from './securechain/pages/admin/NodeManagement';
 
 function App() {
   return (
@@ -37,6 +40,11 @@ function App() {
       <Route path="/blockchain/verify" element={<VerifyTransactionPage />} />
       <Route path="/blockchain/graph" element={<BlockchainGraphPage />} />
       <Route path="/blockchain/blocks" element={<BlockLedger />} />
+      {/* SecureChain Admin Routes */}
+      <Route path="/securechain/admin" element={<AdminDashboard />} />
+      <Route path="/securechain/admin/ledger" element={<BlockLedger />} />
+      <Route path="/securechain/admin/audit" element={<ChainIntegrityAudit />} />
+      <Route path="/securechain/admin/nodes" element={<NodeManagement />} />
       <Route path="/dashboard" element={<Layout />}>
         <Route index element={<Overview />} />
         <Route path="upload" element={<Upload />} />

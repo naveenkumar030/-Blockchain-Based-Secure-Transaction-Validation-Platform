@@ -465,6 +465,24 @@ class LocalAsyncCollection:
         return LocalCursor(docs)
 
 
+_mongo_online = None
+_last_mongo_check = 0
+
+async def check_mongo_available():
+    global _mongo_online, _last_mongo_check
+    import time
+    now = time.time()
+    if _mongo_online is not None and (now - _last_mongo_check < 30):
+        return _mongo_online
+    try:
+        await asyncio.wait_for(client.admin.command('ping'), timeout=0.5)
+        _mongo_online = True
+    except Exception:
+        _mongo_online = False
+    _last_mongo_check = now
+    return _mongo_online
+
+
 # Local Async Collections for non-login datasets
 recon_results_col = LocalAsyncCollection("reconciliation_results")
 recon_runs_col = LocalAsyncCollection("reconciliation_runs")
@@ -472,14 +490,16 @@ uploads_col = LocalAsyncCollection("uploads")
 
 
 class HybridAuthCollection:
-    """Wrapper that tries MongoDB with a 5s timeout, falling back seamlessly to LocalAsyncCollection if MongoDB fails or times out."""
+    """Wrapper that tries MongoDB when available, falling back seamlessly and immediately to LocalAsyncCollection if MongoDB fails or times out."""
     def __init__(self, mongo_coll, name: str):
         self._mongo = mongo_coll
         self._local = LocalAsyncCollection(name)
 
     async def find_one(self, query: dict = None, projection: dict = None, sort=None):
+        if not await check_mongo_available():
+            return await self._local.find_one(query, projection, sort=sort)
         try:
-            return await asyncio.wait_for(self._mongo.find_one(query, projection, sort=sort), timeout=5.0)
+            return await asyncio.wait_for(self._mongo.find_one(query, projection, sort=sort), timeout=1.0)
         except Exception as e:
             print(f"[HybridAuthCollection] Mongo operation failed for find_one ({self._local.collection_name}): {e}. Falling back to local store.")
             return await self._local.find_one(query, projection, sort=sort)

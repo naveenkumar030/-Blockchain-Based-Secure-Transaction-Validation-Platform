@@ -599,6 +599,24 @@ export default function BlockchainUserDashboard({ initialNav = 'Dashboard' }) {
                   >
                     <ExternalLink size={14} /> Switch to GST Workspace
                   </button>
+                  <button
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      navigate('/securechain/admin');
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-[#595856] hover:text-[#141413] hover:bg-[#FAF9F5] transition-colors text-left"
+                  >
+                    <Shield size={14} className="text-indigo-500" /> Admin Panel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      navigate('/blockchain/blocks');
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-[#595856] hover:text-[#141413] hover:bg-[#FAF9F5] transition-colors text-left"
+                  >
+                    <Blocks size={14} className="text-[#D97757]" /> Block Ledger
+                  </button>
                   <div className="border-t border-[#E8E6DC] my-1"></div>
                   <button
                     onClick={() => {

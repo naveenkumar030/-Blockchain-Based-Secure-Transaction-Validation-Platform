@@ -21,6 +21,7 @@ import { MerkleTreeViewer } from '../../components/MerkleTreeViewer';
 import { BlockchainBlock } from '../../types/blockchain';
 import { securechainApi } from '../../services/securechainApi';
 import { HashBadge } from '../../components/HashBadge';
+import { TransactionDemoPanel } from '../../components/TransactionDemoPanel';
 
 export default function BlockLedger() {
   const [selectedBlock, setSelectedBlock] = useState<BlockchainBlock | null>(null);
@@ -149,7 +150,9 @@ export default function BlockLedger() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <TransactionDemoPanel onBlockMined={fetchBlocks} />
+
           <a
             href="/blockchain/graph"
             className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E8E6DC] hover:border-[#2563EB] hover:text-[#2563EB] text-[#141413] rounded-lg text-xs font-semibold transition-colors shadow-xs"
